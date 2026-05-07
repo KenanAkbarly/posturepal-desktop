@@ -230,17 +230,98 @@ interface BaselineProfile {
   shoulderAsymmetry: number; // user's natural asymmetry
   alignment: number;         // user's normal alignment
   capturedAt: ISOString;
+  sampleCount: number;
 }
 ```
 
-Subsequent measurements compare against baseline (allowing X% deviation) rather than absolute thresholds.
+The capture pipeline rejects baselines that fall outside the clinical
+healthy range (§3.6) and asks the user to recalibrate. An "advanced
+override" path exists but requires confirmation — the clinical safety
+layer (§3.6) still catches breaches even if the baseline is permitted.
 
-### 3.4 Smoothing & Hysteresis
+### 3.4 Two-Layer Hybrid Classification
+
+Status is the WORST verdict from two independent layers run in parallel.
+
+```
+                            ┌──────────────────────────┐
+        smoothed metrics ──▶│ LAYER 1: Clinical        │── status_clin ─┐
+                            │ (research-backed         │                │
+                            │  absolute thresholds)    │                │
+                            └──────────────────────────┘                ▼
+                                                                  ┌──────────┐
+                                                                  │ WORST(.) │── final status
+                                                                  └──────────┘
+                            ┌──────────────────────────┐                ▲
+        smoothed metrics ──▶│ LAYER 2: Personalized    │── status_pers ─┘
+        baseline       ──▶ │ (deviation from user's   │
+        sensitivity    ──▶ │  captured baseline)      │
+                            └──────────────────────────┘
+```
+
+This design protects users who calibrated with a poor posture they
+believed was "normal" — the clinical layer keeps catching breaches
+regardless of baseline. Users can disable the clinical layer in
+Settings ("advanced") to fall back to personal-only.
+
+### 3.5 Personalized Layer (Layer 2)
+
+Sensitivity slider sets the deviation tolerance:
+
+| Level  | Warning at | Poor at |
+|--------|-----------|---------|
+| Low    | 10%       | 20%     |
+| Medium | 15%       | 30%     |
+| High   | 25%       | 50%     |
+
+For CVA and alignment, deviation is `(baseline - current) / baseline`.
+For shoulder asymmetry (where baseline can be near zero), deviation is
+`(current - baseline) / 100`. Worst-of-three rule across the metrics
+yields the personalized status.
+
+### 3.6 Clinical Layer (Layer 1)
+
+Independent of any user's baseline. Defines a research-backed envelope
+of healthy posture.
+
+**Craniovertebral Angle (CVA):**
+- Healthy: ≥ 50°
+- Warning: 45–49°
+- Poor: < 45°
+
+Source: Kim D, Lee H, Park K. (2024b). *Real-time forward head posture
+detection using webcam computer vision.* Applied Sciences, 14(7), 2965.
+Threshold of 48° + 2° safety margin.
+
+**Shoulder asymmetry (shoulder-width-normalized %):**
+- Healthy: < 5%
+- Warning: 5–8%
+- Poor: > 8%
+
+Source: Cortes et al. (2024). *Sitting posture recognition systems:
+comparison of pretrained convolutional neural network models.*
+
+**Ear-shoulder-hip alignment:**
+- Healthy: ≥ 165°
+- Warning: 155–164°
+- Poor: < 155°
+
+Source: Moreira et al. (2022). *A computer vision-based mobile tool for
+assessing human posture: a validation study.*
+
+The clinical classifier returns a per-metric breakdown (`{ cva,
+shoulderAsymmetry, alignment }`) plus the overall worst status and the
+worst-ranked metric, so the UI can name *which* metric pulled the user
+out of the safe range.
+
+### 3.7 Smoothing & Hysteresis
+
+### 3.7 Smoothing & Hysteresis (continued)
 
 To prevent false positives:
 1. **Sliding window:** Average values over last 3 seconds (90 frames at 30fps)
 2. **Hysteresis:** Status changes require 5+ consecutive seconds of new state
-3. **Visibility filter:** Only use frames where visibility > 0.7
+3. **Visibility filter:** Only use frames where visibility > 0.5
 
 ### 3.5 Status Classification
 

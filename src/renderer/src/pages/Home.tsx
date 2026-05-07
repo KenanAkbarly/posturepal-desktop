@@ -22,9 +22,10 @@ export default function Home(): React.JSX.Element {
     videoRef.current = handle?.videoElement ?? null
   }
 
-  const { pose, metrics, smoothed, deltas, status } = usePostureMonitor(videoRef, {
+  const { pose, metrics, smoothed, classification, status } = usePostureMonitor(videoRef, {
     baseline,
-    sensitivity: settings.sensitivity
+    sensitivity: settings.sensitivity,
+    useClinicalLayer: settings.useClinicalLayer
   })
   useStatusAlerts(status, { notifications: settings.notifications, sound: settings.sound })
 
@@ -47,8 +48,12 @@ export default function Home(): React.JSX.Element {
         <CalibrationFlow metrics={metrics} onComplete={(b) => settingsStore.setBaseline(b)} />
       ) : (
         <>
-          <StatusIndicator status={status} metrics={smoothed ?? metrics} />
-          <BaselineCard baseline={baseline} deltas={deltas} />
+          <StatusIndicator
+            status={status}
+            classification={classification}
+            metrics={smoothed ?? metrics}
+          />
+          <BaselineCard baseline={baseline} deltas={classification?.personal?.deltas ?? null} />
           <Button variant="ghost" size="sm" onClick={() => settingsStore.setBaseline(null)}>
             Recalibrate
           </Button>
@@ -69,6 +74,12 @@ export default function Home(): React.JSX.Element {
         </span>
         <span>
           Sensitivity: <span className="font-mono text-foreground">{settings.sensitivity}</span>
+        </span>
+        <span>
+          Clinical:{' '}
+          <span className="font-mono text-foreground">
+            {settings.useClinicalLayer ? 'on' : 'off'}
+          </span>
         </span>
       </div>
     </div>

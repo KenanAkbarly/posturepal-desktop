@@ -9,7 +9,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { Bell, RotateCcw } from 'lucide-react'
+import { Bell, RotateCcw, ShieldAlert } from 'lucide-react'
 import { settingsStore, useSettings, type AppSettings } from '@/lib/settingsStore'
 import { api } from '@/lib/ipc'
 import { TOLERANCES, type SensitivityLevel } from '@/posture/calibration'
@@ -71,6 +71,22 @@ export default function Settings(): React.JSX.Element {
             <p className="text-xs text-muted-foreground">
               {SENSITIVITY_DESCRIPTION[settings.sensitivity]}
             </p>
+          </div>
+          <Separator />
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col">
+              <span className="flex items-center gap-2 text-sm">
+                <ShieldAlert className="h-4 w-4 text-red-500" /> Use clinical safety layer
+              </span>
+              <span className="max-w-md text-xs text-muted-foreground">
+                Adds absolute thresholds from clinical research alongside your personal baseline.
+                Status falls back to whichever layer is worse — protects against bad calibrations.
+              </span>
+            </div>
+            <Switch
+              checked={settings.useClinicalLayer}
+              onCheckedChange={(v) => update({ useClinicalLayer: v })}
+            />
           </div>
           <Separator />
           <div className="flex items-center justify-between">

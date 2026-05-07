@@ -1,12 +1,15 @@
-import { Frown, Meh, Smile } from 'lucide-react'
+import { Frown, Meh, Smile, ShieldAlert, User } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { PostureMetrics, PostureStatus } from '@/posture/types'
-import { classifyMetric } from '@/posture/calculations'
+import type { HybridClassification } from '@/posture/hybrid-classifier'
+import { classifyAsymmetryClinical, classifyCvaClinical, classifyAlignmentClinical } from '@/posture/clinical-thresholds'
 
 interface StatusIndicatorProps {
   status: PostureStatus
+  classification: HybridClassification | null
   metrics: PostureMetrics | null
   className?: string
 }
@@ -43,6 +46,7 @@ const METRIC_BAR = {
 
 export function StatusIndicator({
   status,
+  classification,
   metrics,
   className
 }: StatusIndicatorProps): React.JSX.Element {
@@ -58,8 +62,11 @@ export function StatusIndicator({
         >
           <Icon className={cn('h-20 w-20', STATUS_COLOR[status])} />
         </div>
-        <div className={cn('text-center text-2xl font-semibold', STATUS_COLOR[status])}>
-          {STATUS_LABEL[status]}
+        <div className="flex flex-col items-center gap-2">
+          <div className={cn('text-center text-2xl font-semibold', STATUS_COLOR[status])}>
+            {STATUS_LABEL[status]}
+          </div>
+          {classification && <ReasonBanner classification={classification} />}
         </div>
         {metrics && (
           <div className="grid w-full grid-cols-3 gap-6">
@@ -68,26 +75,67 @@ export function StatusIndicator({
               value={metrics.cva}
               unit="°"
               max={90}
-              status={classifyMetric('cva', metrics.cva)}
+              status={classifyCvaClinical(metrics.cva)}
             />
             <MetricBar
               label="Asymmetry"
               value={metrics.shoulderAsymmetry}
               unit="%"
               max={20}
-              status={classifyMetric('shoulderAsymmetry', metrics.shoulderAsymmetry)}
+              status={classifyAsymmetryClinical(metrics.shoulderAsymmetry)}
             />
             <MetricBar
               label="Alignment"
               value={metrics.alignment}
               unit="°"
               max={180}
-              status={classifyMetric('alignment', metrics.alignment)}
+              status={classifyAlignmentClinical(metrics.alignment)}
             />
           </div>
         )}
       </CardContent>
     </Card>
+  )
+}
+
+function ReasonBanner({
+  classification
+}: {
+  classification: HybridClassification
+}): React.JSX.Element {
+  const { reason, details } = classification
+  const showClinical = reason === 'clinical' || reason === 'both' || reason === 'no-baseline'
+  const showPersonal = reason === 'personal' || reason === 'both'
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <p className="text-center text-sm text-muted-foreground">{details}</p>
+      <div className="flex items-center gap-1.5">
+        {showClinical && (
+          <Badge
+            variant="outline"
+            className="gap-1 border-red-500/30 bg-red-500/5 text-[10px] text-red-500"
+          >
+            <ShieldAlert className="h-3 w-3" /> clinical
+          </Badge>
+        )}
+        {showPersonal && (
+          <Badge
+            variant="outline"
+            className="gap-1 border-amber-500/30 bg-amber-500/5 text-[10px] text-amber-500"
+          >
+            <User className="h-3 w-3" /> personal
+          </Badge>
+        )}
+        {reason === 'good' && (
+          <Badge
+            variant="outline"
+            className="gap-1 border-emerald-500/30 bg-emerald-500/5 text-[10px] text-emerald-500"
+          >
+            healthy range
+          </Badge>
+        )}
+      </div>
+    </div>
   )
 }
 
