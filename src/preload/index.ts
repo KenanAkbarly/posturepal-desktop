@@ -1,12 +1,18 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { IPC } from './channels'
 
-// Custom APIs for renderer
-const api = {}
+const api = {
+  openCameraSettings: (): Promise<void> => ipcRenderer.invoke(IPC.SYSTEM_OPEN_CAMERA_SETTINGS),
+  notifyPosture: (level: 'warning' | 'poor'): Promise<void> =>
+    ipcRenderer.invoke(IPC.NOTIFY_POSTURE, level),
+  playAlertSound: (): Promise<void> => ipcRenderer.invoke(IPC.SOUND_PLAY_ALERT),
+  setTrayStatus: (status: 'good' | 'warning' | 'poor' | 'idle'): Promise<void> =>
+    ipcRenderer.invoke(IPC.TRAY_SET_STATUS, status)
+}
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
+export type AppApi = typeof api
+
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
