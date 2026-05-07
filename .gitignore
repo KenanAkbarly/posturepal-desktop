@@ -12,6 +12,10 @@ release/
 .vite/
 *.tsbuildinfo
 
+# Generated model + WASM (downloaded by scripts/download-model.mjs)
+resources/models/
+resources/mediapipe-wasm/
+
 # Electron-builder
 release-builds/
 app-builds/

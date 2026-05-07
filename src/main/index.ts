@@ -22,6 +22,14 @@ function createWindow(): void {
     mainWindow.show()
   })
 
+  if (is.dev) {
+    mainWindow.webContents.on('console-message', (_event, level, message, line, sourceId) => {
+      const tag = ['debug', 'info', 'warn', 'error'][level] ?? 'log'
+      // eslint-disable-next-line no-console
+      console.log(`[renderer:${tag}] ${message} (${sourceId}:${line})`)
+    })
+  }
+
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
