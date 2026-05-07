@@ -1,6 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
-import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -10,13 +9,19 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { Bell } from 'lucide-react'
+import { Bell, RotateCcw } from 'lucide-react'
 import { settingsStore, useSettings, type AppSettings } from '@/lib/settingsStore'
 import { api } from '@/lib/ipc'
+import { TOLERANCES, type SensitivityLevel } from '@/posture/calibration'
+
+const SENSITIVITY_DESCRIPTION: Record<SensitivityLevel, string> = {
+  low: 'Low — alerts on small deviations from your baseline (10% / 20%)',
+  medium: 'Medium — balanced (15% / 30%)',
+  high: 'High — alerts only on large deviations (25% / 50%)'
+}
 
 export default function Settings(): React.JSX.Element {
   const settings = useSettings()
-
   const update = (patch: Partial<AppSettings>): void => settingsStore.set(patch)
 
   return (
@@ -28,7 +33,10 @@ export default function Settings(): React.JSX.Element {
       <Card>
         <CardHeader>
           <CardTitle>Detection</CardTitle>
-          <CardDescription>Camera and sensitivity settings.</CardDescription>
+          <CardDescription>
+            Calibration captures your individual posture. Sensitivity controls how much deviation
+            triggers a warning vs poor verdict.
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
@@ -43,12 +51,45 @@ export default function Settings(): React.JSX.Element {
             </Select>
           </div>
           <Separator />
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Sensitivity</label>
-            <Slider defaultValue={[50]} max={100} step={1} />
+            <Select
+              value={settings.sensitivity}
+              onValueChange={(v) => update({ sensitivity: v as SensitivityLevel })}
+            >
+              <SelectTrigger className="w-72">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {(Object.keys(TOLERANCES) as SensitivityLevel[]).map((level) => (
+                  <SelectItem key={level} value={level}>
+                    {level.charAt(0).toUpperCase() + level.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <p className="text-xs text-muted-foreground">
-              Higher sensitivity triggers warnings at smaller posture deviations.
+              {SENSITIVITY_DESCRIPTION[settings.sensitivity]}
             </p>
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-sm">Calibration baseline</span>
+              <span className="text-xs text-muted-foreground">
+                {settings.baseline
+                  ? `Captured ${new Date(settings.baseline.capturedAt).toLocaleString()}`
+                  : 'No baseline yet — calibrate from the Monitor screen.'}
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!settings.baseline}
+              onClick={() => settingsStore.setBaseline(null)}
+            >
+              <RotateCcw className="mr-2 h-4 w-4" /> Recalibrate
+            </Button>
           </div>
         </CardContent>
       </Card>
