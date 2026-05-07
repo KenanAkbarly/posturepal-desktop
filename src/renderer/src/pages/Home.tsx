@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { WebcamView, type WebcamViewHandle } from '@/components/WebcamView'
 import { SkeletonOverlay } from '@/components/SkeletonOverlay'
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { usePostureMonitor } from '@/hooks/usePostureMonitor'
 import { useStatusAlerts } from '@/hooks/useStatusAlerts'
 import { useSettings } from '@/lib/settingsStore'
+import { api } from '@/lib/ipc'
 import type { BaselineProfile } from '@/posture/calibration'
 
 export default function Home(): React.JSX.Element {
@@ -23,6 +24,10 @@ export default function Home(): React.JSX.Element {
 
   const { pose, metrics, smoothed, status } = usePostureMonitor(videoRef)
   useStatusAlerts(status, { notifications: settings.notifications, sound: settings.sound })
+
+  useEffect(() => {
+    void api.setTrayStatus(baseline ? status : 'idle')
+  }, [status, baseline])
 
   return (
     <div className="flex flex-1 flex-col items-center gap-6 p-8">

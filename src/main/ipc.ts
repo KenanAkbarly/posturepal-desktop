@@ -1,8 +1,9 @@
-import { ipcMain, shell } from 'electron'
+import { BrowserWindow, ipcMain, shell } from 'electron'
 import { IPC } from '../preload/channels'
 import { playAlertSound, showPostureNotification } from './notifications'
+import { setTrayStatus, type TrayStatus } from './tray'
 
-export function registerIpcHandlers(): void {
+export function registerIpcHandlers(getMainWindow: () => BrowserWindow | null): void {
   ipcMain.handle(IPC.SYSTEM_OPEN_CAMERA_SETTINGS, async () => {
     if (process.platform === 'darwin') {
       await shell.openExternal(
@@ -19,5 +20,9 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle(IPC.SOUND_PLAY_ALERT, () => {
     playAlertSound()
+  })
+
+  ipcMain.handle(IPC.TRAY_SET_STATUS, (_event, status: TrayStatus) => {
+    setTrayStatus(status, getMainWindow)
   })
 }
