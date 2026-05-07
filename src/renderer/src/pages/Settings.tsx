@@ -9,8 +9,13 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { settingsStore, useSettings, type AppSettings } from '@/lib/settingsStore'
 
 export default function Settings(): React.JSX.Element {
+  const settings = useSettings()
+
+  const update = (patch: Partial<AppSettings>): void => settingsStore.set(patch)
+
   return (
     <div className="flex flex-1 flex-col gap-6 p-8">
       <div>
@@ -53,11 +58,14 @@ export default function Settings(): React.JSX.Element {
         <CardContent className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <span className="text-sm">Enable native notifications</span>
-            <Switch defaultChecked />
+            <Switch
+              checked={settings.notifications}
+              onCheckedChange={(v) => update({ notifications: v })}
+            />
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm">Play sound</span>
-            <Switch />
+            <span className="text-sm">Play sound on poor posture</span>
+            <Switch checked={settings.sound} onCheckedChange={(v) => update({ sound: v })} />
           </div>
         </CardContent>
       </Card>
@@ -67,7 +75,10 @@ export default function Settings(): React.JSX.Element {
           <CardTitle>Language</CardTitle>
         </CardHeader>
         <CardContent>
-          <Select defaultValue="en">
+          <Select
+            value={settings.language}
+            onValueChange={(v) => update({ language: v as AppSettings['language'] })}
+          >
             <SelectTrigger className="w-48">
               <SelectValue />
             </SelectTrigger>
