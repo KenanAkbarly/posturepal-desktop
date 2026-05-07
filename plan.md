@@ -18,58 +18,58 @@
 
 ### Morning: Setup & Skeleton
 - 🟢 Initialize Electron + Vite + React + TS project (electron-vite template) — 2026-05-07
-- 🟡 Configure Tailwind CSS and install shadcn/ui — Tailwind done 2026-05-07; shadcn/ui pending next prompt
+- 🟢 Configure Tailwind CSS and install shadcn/ui — 2026-05-07
 - 🟢 Set up TypeScript strict mode and path aliases (`@/`) — 2026-05-07
 - 🟢 Configure Vitest for unit testing — 2026-05-07
 - 🟢 Verify empty app launches with "Hello PosturePal" screen — 2026-05-07
-- 🔴 Commit: initial scaffold
+- 🟢 Commit: initial scaffold — 2026-05-07
 
 ### Midday: Webcam + MediaPipe Integration
-- 🔴 Install @mediapipe/tasks-vision
-- 🔴 Configure WASM file bundling (electron-vite config)
-- 🔴 Add CSP headers allowing wasm-unsafe-eval
-- 🔴 Implement `useWebcam` hook (request permission, get stream, handle errors)
-- 🔴 Create `WebcamView` component with live preview
-- 🔴 Initialize PoseLandmarker with full model
-- 🔴 Implement `usePoseDetection` hook (run detection on each frame)
-- 🔴 Create `SkeletonOverlay` component (canvas drawing keypoints + connections)
-- 🔴 Verify 33 keypoints detected at 25-30 FPS
+- 🟢 Install @mediapipe/tasks-vision — 2026-05-07
+- 🟢 Configure WASM file bundling (electron-vite config) — 2026-05-07 (publicDir → resources/, postinstall copies WASM)
+- 🟢 Add CSP headers allowing wasm-unsafe-eval — 2026-05-07
+- 🟢 Implement `useWebcam` hook (request permission, get stream, handle errors) — 2026-05-07
+- 🟢 Create `WebcamView` component with live preview — 2026-05-07
+- 🟢 Initialize PoseLandmarker with full model — 2026-05-07 (postinstall downloads from Google CDN)
+- 🟢 Implement `usePoseDetection` hook (run detection on each frame) — 2026-05-07
+- 🟢 Create `SkeletonOverlay` component (canvas drawing keypoints + connections) — 2026-05-07
+- 🟢 Verify 33 keypoints detected at 25-30 FPS — 2026-05-07 (Graph successfully started running, GPU delegate)
 
 ### Evening: Posture Calculations
-- 🔴 Create `src/renderer/posture/types.ts` (Point, Keypoints, etc.)
-- 🔴 Implement `calculateCVA(ear, shoulder)` in `calculations.ts`
-- 🔴 Implement `calculateShoulderAsymmetry(left, right)` (normalized!)
-- 🔴 Implement `calculateAlignmentAngle(ear, shoulder, hip)`
-- 🔴 Add visibility filter helpers (use side with higher visibility)
-- 🔴 Write unit tests for all 3 calculations (`__tests__/calculations.test.ts`)
-- 🔴 Commit: posture calculations module with tests
+- 🟢 Create `src/renderer/src/posture/types.ts` (Point, Keypoints, etc.) — 2026-05-07
+- 🟢 Implement `calculateCVA(ear, shoulder)` in `calculations.ts` — 2026-05-07
+- 🟢 Implement `calculateShoulderAsymmetry(left, right)` (normalized!) — 2026-05-07
+- 🟢 Implement `calculateAlignmentAngle(ear, shoulder, hip)` — 2026-05-07
+- 🟢 Add visibility filter helpers (use side with higher visibility) — 2026-05-07 (`getMostVisibleSide`)
+- 🟢 Write unit tests for all 3 calculations (`__tests__/calculations.test.ts`) — 2026-05-07 (17 tests)
+- 🟢 Commit: posture calculations module with tests — 2026-05-07
 
 ---
 
 ## Day 2 — Core Logic & UX (May 9)
 
 ### Morning: Calibration & Smoothing
-- 🔴 Create `calibration.ts` — captures 5-second baseline
-- 🔴 Implement sliding window smoothing (3-second buffer)
-- 🔴 Implement hysteresis logic (5+ second state confirmation)
-- 🔴 Create `usePostureMonitor` hook combining detection + calculation + smoothing
-- 🔴 Build `CalibrationFlow` component (countdown UI)
-- 🔴 Tests for calibration and smoothing
+- 🟢 Create `calibration.ts` — captures 5-second baseline — 2026-05-07
+- 🟢 Implement sliding window smoothing (3-second buffer) — 2026-05-07 (90 frames @ 30fps)
+- 🟢 Implement hysteresis logic (5+ second state confirmation) — 2026-05-07
+- 🟢 Create `usePostureMonitor` hook combining detection + calculation + smoothing — 2026-05-07
+- 🟢 Build `CalibrationFlow` component (countdown UI) — 2026-05-07
+- 🟢 Tests for calibration and smoothing — 2026-05-07 (12 tests)
 
 ### Midday: Alarms & Feedback
-- 🔴 Define `PostureStatus` type and status classifier
-- 🔴 IPC handler in main process for native notifications
-- 🔴 IPC handler for system sound playback
-- 🔴 Implement notification cooldown (max 1 per 5 min)
-- 🔴 Wire up status changes to trigger alarms
-- 🔴 Create `StatusIndicator` component (large green/yellow/red display)
+- 🟢 Define `PostureStatus` type and status classifier — 2026-05-07
+- 🟢 IPC handler in main process for native notifications — 2026-05-07
+- 🟢 IPC handler for system sound playback — 2026-05-07 (`shell.beep`)
+- 🟢 Implement notification cooldown (max 1 per 5 min) — 2026-05-07 (main + renderer belt-and-suspenders)
+- 🟢 Wire up status changes to trigger alarms — 2026-05-07 (`useStatusAlerts`)
+- 🟢 Create `StatusIndicator` component (large green/yellow/red display) — 2026-05-07
 
 ### Evening: UI & Settings
-- 🔴 Build main monitoring view (skeleton overlay + status + metrics)
-- 🔴 Build Settings page (camera select, sensitivity, language, sound)
-- 🔴 System tray with minimize-to-tray behavior
-- 🔴 IPC for settings persistence
-- 🔴 Commit: working MVP without database
+- 🟢 Build main monitoring view (skeleton overlay + status + metrics) — 2026-05-07
+- 🟢 Build Settings page (camera select, sensitivity, language, sound) — 2026-05-07
+- 🟢 System tray with minimize-to-tray behavior — 2026-05-07
+- 🟡 IPC for settings persistence — in-memory store wired 2026-05-07; SQLite persistence Day 3
+- 🟢 Commit: working MVP without database — 2026-05-07
 
 ---
 
