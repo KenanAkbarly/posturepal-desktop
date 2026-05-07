@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: posturepal-scaffold
+appId: com.posturepal.desktop
+productName: PosturePal
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: posturepal-scaffold
+  executableName: posturepal-desktop
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
