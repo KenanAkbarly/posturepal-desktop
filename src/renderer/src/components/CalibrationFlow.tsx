@@ -24,10 +24,15 @@ export function CalibrationFlow({ metrics, onComplete }: CalibrationFlowProps): 
   const accumulator = useRef(new BaselineAccumulator())
   const captureStartRef = useRef(0)
   const metricsRef = useRef<PostureMetrics | null>(null)
+  const onCompleteRef = useRef(onComplete)
 
   useEffect(() => {
     metricsRef.current = metrics
   }, [metrics])
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  }, [onComplete])
 
   useEffect(() => {
     if (phase !== 'countdown') return
@@ -58,7 +63,7 @@ export function CalibrationFlow({ metrics, onComplete }: CalibrationFlowProps): 
         const result = accumulator.current.result()
         if (result) {
           setBaseline(result)
-          onComplete(result)
+          onCompleteRef.current(result)
           setPhase('done')
         } else {
           setPhase('idle')
@@ -69,7 +74,7 @@ export function CalibrationFlow({ metrics, onComplete }: CalibrationFlowProps): 
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [phase, onComplete])
+  }, [phase])
 
   return (
     <Card className="w-full max-w-xl">
@@ -79,7 +84,7 @@ export function CalibrationFlow({ metrics, onComplete }: CalibrationFlowProps): 
         </CardTitle>
         <CardDescription>
           Sit naturally facing your camera. We will capture a 5-second baseline of your normal
-          posture.
+          posture. Future alerts will compare against this — not generic thresholds.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">

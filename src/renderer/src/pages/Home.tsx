@@ -1,28 +1,31 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { WebcamView, type WebcamViewHandle } from '@/components/WebcamView'
 import { SkeletonOverlay } from '@/components/SkeletonOverlay'
 import { CalibrationFlow } from '@/components/CalibrationFlow'
 import { StatusIndicator } from '@/components/StatusIndicator'
-import { Button } from '@/components/ui/button'
+import { BaselineCard } from '@/components/BaselineCard'
 import { usePostureMonitor } from '@/hooks/usePostureMonitor'
 import { useStatusAlerts } from '@/hooks/useStatusAlerts'
-import { useSettings } from '@/lib/settingsStore'
+import { settingsStore, useSettings } from '@/lib/settingsStore'
 import { api } from '@/lib/ipc'
-import type { BaselineProfile } from '@/posture/calibration'
 
 export default function Home(): React.JSX.Element {
   const webcamRef = useRef<WebcamViewHandle | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
-  const [baseline, setBaseline] = useState<BaselineProfile | null>(null)
   const settings = useSettings()
+  const baseline = settings.baseline
 
   const setVideoRef = (handle: WebcamViewHandle | null): void => {
     webcamRef.current = handle
     videoRef.current = handle?.videoElement ?? null
   }
 
-  const { pose, metrics, smoothed, status } = usePostureMonitor(videoRef)
+  const { pose, metrics, smoothed, deltas, status } = usePostureMonitor(videoRef, {
+    baseline,
+    sensitivity: settings.sensitivity
+  })
   useStatusAlerts(status, { notifications: settings.notifications, sound: settings.sound })
 
   useEffect(() => {
@@ -41,11 +44,12 @@ export default function Home(): React.JSX.Element {
       </div>
 
       {!baseline ? (
-        <CalibrationFlow metrics={metrics} onComplete={setBaseline} />
+        <CalibrationFlow metrics={metrics} onComplete={(b) => settingsStore.setBaseline(b)} />
       ) : (
         <>
           <StatusIndicator status={status} metrics={smoothed ?? metrics} />
-          <Button variant="ghost" size="sm" onClick={() => setBaseline(null)}>
+          <BaselineCard baseline={baseline} deltas={deltas} />
+          <Button variant="ghost" size="sm" onClick={() => settingsStore.setBaseline(null)}>
             Recalibrate
           </Button>
         </>
@@ -62,6 +66,9 @@ export default function Home(): React.JSX.Element {
         )}
         <span>
           FPS: <span className="font-mono text-foreground">{pose.fps}</span>
+        </span>
+        <span>
+          Sensitivity: <span className="font-mono text-foreground">{settings.sensitivity}</span>
         </span>
       </div>
     </div>
