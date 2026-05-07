@@ -71,6 +71,15 @@
 - 🟡 IPC for settings persistence — in-memory store wired 2026-05-07; SQLite persistence Day 3
 - 🟢 Commit: working MVP without database — 2026-05-07
 
+### Day 2 Addendum: Hybrid Classification (Clinical + Personalized)
+- 🟢 Hybrid classification (clinical + personalized) — clinical safety layer added — 2026-05-08
+  - `posture/clinical-thresholds.ts` — research-backed absolute thresholds (Kim 2024b, Cortes 2024, Moreira 2022)
+  - `posture/hybrid-classifier.ts` — WORST(clinical, personal) with reason tagging + user-facing details
+  - Calibration safety check: rejects baselines outside clinical healthy zone with retry / advanced-override flow
+  - StatusIndicator surfaces reason badges (clinical / personal) and contextual details
+  - Settings toggle: "Use clinical safety layer" (default ON)
+  - 42 new tests (26 clinical + 16 hybrid); 93/93 total green
+
 ---
 
 ## Day 3 — Data Layer & Marketing Site (May 10)

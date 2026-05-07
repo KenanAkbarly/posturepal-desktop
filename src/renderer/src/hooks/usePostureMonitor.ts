@@ -1,15 +1,9 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { calculatePostureMetrics, classifyPosture } from '@/posture/calculations'
+import { calculatePostureMetrics } from '@/posture/calculations'
 import type { PostureMetrics, PostureStatus } from '@/posture/types'
 import { Hysteresis, SlidingWindow } from '@/posture/smoothing'
-import {
-  applyBaseline,
-  classifyAgainstBaseline,
-  TOLERANCES,
-  type BaselineDeltas,
-  type BaselineProfile,
-  type SensitivityLevel
-} from '@/posture/calibration'
+import type { BaselineProfile, SensitivityLevel } from '@/posture/calibration'
+import { classifyHybrid, type HybridClassification } from '@/posture/hybrid-classifier'
 import { usePoseDetection, type PoseDetectionState } from './usePoseDetection'
 
 const SMOOTHING_WINDOW_FRAMES = 90
@@ -19,7 +13,7 @@ export interface PostureMonitorState {
   pose: PoseDetectionState
   metrics: PostureMetrics | null
   smoothed: PostureMetrics | null
-  deltas: BaselineDeltas | null
+  classification: HybridClassification | null
   status: PostureStatus
   rawStatus: PostureStatus
 }
@@ -28,17 +22,23 @@ export interface PostureMonitorOptions {
   enabled?: boolean
   baseline?: BaselineProfile | null
   sensitivity?: SensitivityLevel
+  useClinicalLayer?: boolean
 }
 
 export function usePostureMonitor(
   videoRef: RefObject<HTMLVideoElement | null>,
   options: PostureMonitorOptions = {}
 ): PostureMonitorState {
-  const { enabled = true, baseline = null, sensitivity = 'medium' } = options
+  const {
+    enabled = true,
+    baseline = null,
+    sensitivity = 'medium',
+    useClinicalLayer = true
+  } = options
   const pose = usePoseDetection(videoRef, enabled)
   const [metrics, setMetrics] = useState<PostureMetrics | null>(null)
   const [smoothed, setSmoothed] = useState<PostureMetrics | null>(null)
-  const [deltas, setDeltas] = useState<BaselineDeltas | null>(null)
+  const [classification, setClassification] = useState<HybridClassification | null>(null)
   const [status, setStatus] = useState<PostureStatus>('good')
   const [rawStatus, setRawStatus] = useState<PostureStatus>('good')
 
@@ -74,14 +74,15 @@ export function usePostureMonitor(
     }
     setSmoothed(smoothedMetrics)
 
-    const observedStatus = baseline
-      ? classifyAgainstBaseline(smoothedMetrics, baseline, TOLERANCES[sensitivity])
-      : classifyPosture(smoothedMetrics)
+    const result = classifyHybrid(smoothedMetrics, {
+      baseline,
+      sensitivity,
+      useClinicalLayer
+    })
+    setClassification(result)
+    setRawStatus(result.status)
+    setStatus(hysteresis.feed(result.status))
+  }, [pose.result, baseline, sensitivity, useClinicalLayer, hysteresis])
 
-    setRawStatus(observedStatus)
-    setStatus(hysteresis.feed(observedStatus))
-    setDeltas(baseline ? applyBaseline(smoothedMetrics, baseline) : null)
-  }, [pose.result, baseline, sensitivity, hysteresis])
-
-  return { pose, metrics, smoothed, deltas, status, rawStatus }
+  return { pose, metrics, smoothed, classification, status, rawStatus }
 }

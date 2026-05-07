@@ -6,6 +6,7 @@ export interface AppSettings {
   sound: boolean
   language: 'en' | 'tr'
   sensitivity: SensitivityLevel
+  useClinicalLayer: boolean
   baseline: BaselineProfile | null
 }
 
@@ -14,6 +15,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   sound: false,
   language: 'en',
   sensitivity: 'medium',
+  useClinicalLayer: true,
   baseline: null
 }
 
