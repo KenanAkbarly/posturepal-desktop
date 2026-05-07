@@ -6,6 +6,7 @@ const api = {
   openCameraSettings: (): Promise<void> => ipcRenderer.invoke(IPC.SYSTEM_OPEN_CAMERA_SETTINGS),
   notifyPosture: (level: 'warning' | 'poor'): Promise<void> =>
     ipcRenderer.invoke(IPC.NOTIFY_POSTURE, level),
+  testNotification: (): Promise<void> => ipcRenderer.invoke(IPC.NOTIFY_TEST),
   playAlertSound: (): Promise<void> => ipcRenderer.invoke(IPC.SOUND_PLAY_ALERT),
   setTrayStatus: (status: 'good' | 'warning' | 'poor' | 'idle'): Promise<void> =>
     ipcRenderer.invoke(IPC.TRAY_SET_STATUS, status)

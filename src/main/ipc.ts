@@ -1,6 +1,6 @@
 import { BrowserWindow, ipcMain, shell } from 'electron'
 import { IPC } from '../preload/channels'
-import { playAlertSound, showPostureNotification } from './notifications'
+import { playAlertSound, showPostureNotification, showTestNotification } from './notifications'
 import { setTrayStatus, type TrayStatus } from './tray'
 
 export function registerIpcHandlers(getMainWindow: () => BrowserWindow | null): void {
@@ -15,7 +15,13 @@ export function registerIpcHandlers(getMainWindow: () => BrowserWindow | null): 
   })
 
   ipcMain.handle(IPC.NOTIFY_POSTURE, (_event, level: 'warning' | 'poor') => {
+    console.log(`[ipc] NOTIFY_POSTURE received: ${level}`)
     showPostureNotification(level)
+  })
+
+  ipcMain.handle(IPC.NOTIFY_TEST, () => {
+    console.log('[ipc] NOTIFY_TEST received')
+    showTestNotification()
   })
 
   ipcMain.handle(IPC.SOUND_PLAY_ALERT, () => {

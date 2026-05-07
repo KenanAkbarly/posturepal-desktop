@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -9,7 +10,9 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { Bell } from 'lucide-react'
 import { settingsStore, useSettings, type AppSettings } from '@/lib/settingsStore'
+import { api } from '@/lib/ipc'
 
 export default function Settings(): React.JSX.Element {
   const settings = useSettings()
@@ -66,6 +69,18 @@ export default function Settings(): React.JSX.Element {
           <div className="flex items-center justify-between">
             <span className="text-sm">Play sound on poor posture</span>
             <Switch checked={settings.sound} onCheckedChange={(v) => update({ sound: v })} />
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-sm">Test notification</span>
+              <span className="text-xs text-muted-foreground">
+                Verify your OS allows PosturePal to send notifications.
+              </span>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => api.testNotification()}>
+              <Bell className="mr-2 h-4 w-4" /> Send test
+            </Button>
           </div>
         </CardContent>
       </Card>
