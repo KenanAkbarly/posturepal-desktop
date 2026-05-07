@@ -1,0 +1,168 @@
+# PosturePal — Implementation Plan
+
+**Deadline:** May 11, 2026
+**Started:** May 7, 2026
+**Days available:** 4
+
+---
+
+## Status Legend
+- 🔴 Not started
+- 🟡 In progress
+- 🟢 Done
+- ⏸️ Blocked / paused
+
+---
+
+## Day 1 — Foundation (May 8)
+
+### Morning: Setup & Skeleton
+- 🟢 Initialize Electron + Vite + React + TS project (electron-vite template) — 2026-05-07
+- 🟡 Configure Tailwind CSS and install shadcn/ui — Tailwind done 2026-05-07; shadcn/ui pending next prompt
+- 🟢 Set up TypeScript strict mode and path aliases (`@/`) — 2026-05-07
+- 🟢 Configure Vitest for unit testing — 2026-05-07
+- 🟢 Verify empty app launches with "Hello PosturePal" screen — 2026-05-07
+- 🔴 Commit: initial scaffold
+
+### Midday: Webcam + MediaPipe Integration
+- 🔴 Install @mediapipe/tasks-vision
+- 🔴 Configure WASM file bundling (electron-vite config)
+- 🔴 Add CSP headers allowing wasm-unsafe-eval
+- 🔴 Implement `useWebcam` hook (request permission, get stream, handle errors)
+- 🔴 Create `WebcamView` component with live preview
+- 🔴 Initialize PoseLandmarker with full model
+- 🔴 Implement `usePoseDetection` hook (run detection on each frame)
+- 🔴 Create `SkeletonOverlay` component (canvas drawing keypoints + connections)
+- 🔴 Verify 33 keypoints detected at 25-30 FPS
+
+### Evening: Posture Calculations
+- 🔴 Create `src/renderer/posture/types.ts` (Point, Keypoints, etc.)
+- 🔴 Implement `calculateCVA(ear, shoulder)` in `calculations.ts`
+- 🔴 Implement `calculateShoulderAsymmetry(left, right)` (normalized!)
+- 🔴 Implement `calculateAlignmentAngle(ear, shoulder, hip)`
+- 🔴 Add visibility filter helpers (use side with higher visibility)
+- 🔴 Write unit tests for all 3 calculations (`__tests__/calculations.test.ts`)
+- 🔴 Commit: posture calculations module with tests
+
+---
+
+## Day 2 — Core Logic & UX (May 9)
+
+### Morning: Calibration & Smoothing
+- 🔴 Create `calibration.ts` — captures 5-second baseline
+- 🔴 Implement sliding window smoothing (3-second buffer)
+- 🔴 Implement hysteresis logic (5+ second state confirmation)
+- 🔴 Create `usePostureMonitor` hook combining detection + calculation + smoothing
+- 🔴 Build `CalibrationFlow` component (countdown UI)
+- 🔴 Tests for calibration and smoothing
+
+### Midday: Alarms & Feedback
+- 🔴 Define `PostureStatus` type and status classifier
+- 🔴 IPC handler in main process for native notifications
+- 🔴 IPC handler for system sound playback
+- 🔴 Implement notification cooldown (max 1 per 5 min)
+- 🔴 Wire up status changes to trigger alarms
+- 🔴 Create `StatusIndicator` component (large green/yellow/red display)
+
+### Evening: UI & Settings
+- 🔴 Build main monitoring view (skeleton overlay + status + metrics)
+- 🔴 Build Settings page (camera select, sensitivity, language, sound)
+- 🔴 System tray with minimize-to-tray behavior
+- 🔴 IPC for settings persistence
+- 🔴 Commit: working MVP without database
+
+---
+
+## Day 3 — Data Layer & Marketing Site (May 10)
+
+### Morning: SQLite Integration
+- 🔴 Install better-sqlite3, configure for Electron
+- 🔴 Create database initialization in main process
+- 🔴 Implement schema migrations
+- 🔴 IPC handlers: insertSnapshot, getSessionStats, getDailyStats
+- 🔴 Save snapshots every 30s (not every frame)
+- 🔴 Build Dashboard page with Recharts
+- 🔴 Today timeline view + this-week bar chart
+
+### Midday: i18n & Build
+- 🔴 Install and configure i18next
+- 🔴 Create `en.json` and `tr.json` translation files
+- 🔴 Wire all strings through translation
+- 🔴 Language switcher in Settings
+- 🔴 Configure electron-builder for macOS (.dmg) and Windows (.exe)
+- 🔴 Test production build on macOS
+- 🔴 Test production build on Windows (or VM/cross-compile)
+
+### Evening: Marketing Site
+- 🔴 Initialize Next.js 14 project (separate repo: `posturepal-web`)
+- 🔴 Configure Tailwind, shadcn/ui, next-intl
+- 🔴 Build Hero, Features, How It Works, Privacy, Download sections
+- 🔴 Add language switcher
+- 🔴 Both EN and TR translations complete
+- 🔴 Responsive on mobile
+
+---
+
+## Day 4 — Deploy, Polish, Demo (May 11)
+
+### Morning: Deployment
+- 🔴 Push to GitHub: posturepal-desktop and posturepal-web
+- 🔴 Create GitHub Release with .dmg and .exe
+- 🔴 Deploy marketing site to Vercel
+- 🔴 Update download links to point to release
+- 🔴 E2E test: visit site → download → install → run app
+
+### Midday: Academic Materials
+- 🔴 Record 1-2 minute demo video (screen recording)
+- 🔴 Take 6-8 screenshots for documentation
+- 🔴 Write README.md for both repos
+- 🔴 Add "Academic Use Notice" to README
+- 🔴 Update technical spec if anything diverged
+
+### Evening: Final Polish
+- 🔴 Run through manual test checklist (see TECHNICAL_SPEC.md §9)
+- 🔴 Fix any critical bugs found
+- 🔴 Final commit and tag (v1.0.0)
+- 🔴 Submit to instructor
+
+---
+
+## Backlog (V2 — after deadline)
+
+These features are explicitly OUT of MVP:
+- Auto-update mechanism
+- Code signing & notarization
+- Cloud sync / accounts
+- Pomodoro / break reminders
+- Stretching exercise suggestions
+- Mobile app
+- Multi-user profiles
+- Telemetry / analytics
+- Light/dark theme toggle
+- Custom alarm sounds
+
+---
+
+## Decisions Log
+
+Track non-trivial decisions here so they're not re-litigated:
+
+| Date | Decision | Reason |
+|------|----------|--------|
+| 2026-05-07 | Electron over Tauri | Faster development, prior experience |
+| 2026-05-07 | MediaPipe JS over Python sidecar | Sufficient for MVP, simpler deployment |
+| 2026-05-07 | No backend in MVP | Time constraint, supports privacy story |
+| 2026-05-07 | Save snapshots every 30s | Balance granularity vs DB size |
+| 2026-05-07 | Use shoulder-width-normalized asymmetry | Camera-distance-independent |
+
+---
+
+## Risks & Mitigations
+
+| Risk | Likelihood | Mitigation |
+|------|-----------|------------|
+| MediaPipe WASM bundling issues in Electron | Medium | Have fallback config ready, allocate 2h buffer Day 1 |
+| Windows build fails from macOS | Medium | Use GitHub Actions to build on Windows runner |
+| Pose detection too slow on older hardware | Low | Reduce model size (lite vs full) |
+| Camera permission UX unclear | Medium | Explicit onboarding screen explains why |
+| Calibration captures bad pose | High | Allow re-calibration in settings, show preview |
