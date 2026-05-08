@@ -134,6 +134,7 @@ export function classifyHybrid(
       detail = {
         key: 'status.details.both',
         values: {
+          ...(clinicalDescriptor.values ?? {}),
           clinicalKey: clinicalDescriptor.key,
           personalKey: personal?.detail.key ?? 'status.details.personalWarning'
         }
