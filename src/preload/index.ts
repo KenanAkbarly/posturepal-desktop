@@ -70,8 +70,14 @@ const dbApi = {
     ipcRenderer.invoke(IPC.DB_GET_ACTIVE_SESSION)
 }
 
+type CameraAccessStatus = 'not-determined' | 'granted' | 'denied' | 'restricted' | 'unknown'
+
 const api = {
   openCameraSettings: (): Promise<void> => ipcRenderer.invoke(IPC.SYSTEM_OPEN_CAMERA_SETTINGS),
+  getCameraStatus: (): Promise<CameraAccessStatus> =>
+    ipcRenderer.invoke(IPC.SYSTEM_GET_CAMERA_STATUS),
+  requestCameraAccess: (): Promise<boolean> =>
+    ipcRenderer.invoke(IPC.SYSTEM_REQUEST_CAMERA_ACCESS),
   notifyPosture: (level: 'warning' | 'poor'): Promise<void> =>
     ipcRenderer.invoke(IPC.NOTIFY_POSTURE, level),
   testNotification: (): Promise<void> => ipcRenderer.invoke(IPC.NOTIFY_TEST),
