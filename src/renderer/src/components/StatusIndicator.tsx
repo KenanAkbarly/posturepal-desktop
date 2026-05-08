@@ -1,11 +1,16 @@
+import { useTranslation } from 'react-i18next'
 import { Frown, Meh, Smile, ShieldAlert, User } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { PostureMetrics, PostureStatus } from '@/posture/types'
-import type { HybridClassification } from '@/posture/hybrid-classifier'
-import { classifyAsymmetryClinical, classifyCvaClinical, classifyAlignmentClinical } from '@/posture/clinical-thresholds'
+import type { DetailDescriptor, HybridClassification } from '@/posture/hybrid-classifier'
+import {
+  classifyAsymmetryClinical,
+  classifyCvaClinical,
+  classifyAlignmentClinical
+} from '@/posture/clinical-thresholds'
 
 interface StatusIndicatorProps {
   status: PostureStatus
@@ -14,10 +19,10 @@ interface StatusIndicatorProps {
   className?: string
 }
 
-const STATUS_LABEL: Record<PostureStatus, string> = {
-  good: 'Good posture',
-  warning: 'Adjust your posture',
-  poor: 'Poor posture detected'
+const STATUS_LABEL_KEY: Record<PostureStatus, string> = {
+  good: 'status.good',
+  warning: 'status.warning',
+  poor: 'status.poor'
 }
 
 const STATUS_COLOR: Record<PostureStatus, string> = {
@@ -50,6 +55,7 @@ export function StatusIndicator({
   metrics,
   className
 }: StatusIndicatorProps): React.JSX.Element {
+  const { t } = useTranslation()
   const Icon = STATUS_ICON[status]
   return (
     <Card className={cn('w-full max-w-3xl', className)}>
@@ -64,28 +70,28 @@ export function StatusIndicator({
         </div>
         <div className="flex flex-col items-center gap-2">
           <div className={cn('text-center text-2xl font-semibold', STATUS_COLOR[status])}>
-            {STATUS_LABEL[status]}
+            {t(STATUS_LABEL_KEY[status])}
           </div>
           {classification && <ReasonBanner classification={classification} />}
         </div>
         {metrics && (
           <div className="grid w-full grid-cols-3 gap-6">
             <MetricBar
-              label="CVA"
+              label={t('baseline.metric.cva')}
               value={metrics.cva}
               unit="°"
               max={90}
               status={classifyCvaClinical(metrics.cva)}
             />
             <MetricBar
-              label="Asymmetry"
+              label={t('baseline.metric.asymmetry')}
               value={metrics.shoulderAsymmetry}
               unit="%"
               max={20}
               status={classifyAsymmetryClinical(metrics.shoulderAsymmetry)}
             />
             <MetricBar
-              label="Alignment"
+              label={t('baseline.metric.alignment')}
               value={metrics.alignment}
               unit="°"
               max={180}
@@ -98,24 +104,39 @@ export function StatusIndicator({
   )
 }
 
+function resolveDetail(t: (key: string, values?: Record<string, unknown>) => string, descriptor: DetailDescriptor): string {
+  const v = descriptor.values ?? {}
+  const resolved: Record<string, unknown> = { ...v }
+  if (typeof v.metricKey === 'string') resolved.metric = t(v.metricKey)
+  if (typeof v.clinicalKey === 'string') {
+    const clinicalDescriptor = { key: v.clinicalKey as string, values: v } as DetailDescriptor
+    resolved.clinical = resolveDetail(t, clinicalDescriptor)
+  }
+  if (typeof v.personalKey === 'string') {
+    resolved.personal = t(v.personalKey as string).toLowerCase()
+  }
+  return t(descriptor.key, resolved)
+}
+
 function ReasonBanner({
   classification
 }: {
   classification: HybridClassification
 }): React.JSX.Element {
-  const { reason, details } = classification
+  const { t } = useTranslation()
+  const { reason, detail } = classification
   const showClinical = reason === 'clinical' || reason === 'both' || reason === 'no-baseline'
   const showPersonal = reason === 'personal' || reason === 'both'
   return (
     <div className="flex flex-col items-center gap-2">
-      <p className="text-center text-sm text-muted-foreground">{details}</p>
+      <p className="text-center text-sm text-muted-foreground">{resolveDetail(t, detail)}</p>
       <div className="flex items-center gap-1.5">
         {showClinical && (
           <Badge
             variant="outline"
             className="gap-1 border-red-500/30 bg-red-500/5 text-[10px] text-red-500"
           >
-            <ShieldAlert className="h-3 w-3" /> clinical
+            <ShieldAlert className="h-3 w-3" /> {t('status.badge.clinical')}
           </Badge>
         )}
         {showPersonal && (
@@ -123,7 +144,7 @@ function ReasonBanner({
             variant="outline"
             className="gap-1 border-amber-500/30 bg-amber-500/5 text-[10px] text-amber-500"
           >
-            <User className="h-3 w-3" /> personal
+            <User className="h-3 w-3" /> {t('status.badge.personal')}
           </Badge>
         )}
         {reason === 'good' && (
@@ -131,7 +152,7 @@ function ReasonBanner({
             variant="outline"
             className="gap-1 border-emerald-500/30 bg-emerald-500/5 text-[10px] text-emerald-500"
           >
-            healthy range
+            {t('status.badge.healthy')}
           </Badge>
         )}
       </div>

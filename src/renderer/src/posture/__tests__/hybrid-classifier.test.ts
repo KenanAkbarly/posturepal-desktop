@@ -41,7 +41,7 @@ describe('classifyHybrid', () => {
     const result = classifyHybrid(metrics(60, 3, 170), opts({ baseline: healthyBaseline }))
     expect(result.status).toBe('good')
     expect(result.reason).toBe('good')
-    expect(result.details).toMatch(/Good posture/i)
+    expect(result.detail.key).toBe('status.details.good')
   })
 
   it('healthy baseline + slight deviation: personal warning, clinical good → warning by personal', () => {
@@ -50,7 +50,7 @@ describe('classifyHybrid', () => {
     expect(result.reason).toBe('personal')
     expect(result.clinical.status).toBe('good')
     expect(result.personal?.status).toBe('warning')
-    expect(result.details).toMatch(/Slight deviation from your baseline/i)
+    expect(result.detail.key).toBe('status.details.personalWarning')
   })
 
   it('SAFETY NET: bad baseline + sitting same way → personal good, clinical poor → final POOR', () => {
@@ -59,7 +59,7 @@ describe('classifyHybrid', () => {
     expect(result.reason).toBe('clinical')
     expect(result.clinical.status).toBe('poor')
     expect(result.personal?.status).toBe('good')
-    expect(result.details).toMatch(/Below clinical safe range/i)
+    expect(result.detail.key).toBe('status.details.clinicalPoor')
   })
 
   it('healthy baseline + dropping into clinical poor → both poor', () => {
@@ -68,8 +68,9 @@ describe('classifyHybrid', () => {
     expect(result.reason).toBe('both')
     expect(result.clinical.status).toBe('poor')
     expect(result.personal?.status).toBe('poor')
-    expect(result.details.toLowerCase()).toContain('clinical')
-    expect(result.details.toLowerCase()).toContain('baseline')
+    expect(result.detail.key).toBe('status.details.both')
+    expect(result.detail.values?.clinicalKey).toBe('status.details.clinicalPoor')
+    expect(result.detail.values?.personalKey).toBe('status.details.personalPoor')
   })
 
   it('no baseline + clinically good metrics → good', () => {
@@ -102,15 +103,16 @@ describe('classifyHybrid', () => {
     expect(result.clinical.worstMetric).toBe('shoulderAsymmetry')
   })
 
-  it('details are user-readable for clinical warning', () => {
+  it('detail descriptor carries metric + value for clinical warning', () => {
     // Use high sensitivity so 21% personal deviation stays "good"; clinical alone fires.
     const result = classifyHybrid(
       metrics(47, 3, 170),
       opts({ baseline: healthyBaseline, sensitivity: 'high' })
     )
     expect(result.reason).toBe('clinical')
-    expect(result.details).toMatch(/CVA/)
-    expect(result.details).toMatch(/47/)
+    expect(result.detail.key).toBe('status.details.clinicalWarning')
+    expect(result.detail.values?.metricKey).toBe('status.metric.cva')
+    expect(String(result.detail.values?.value)).toContain('47')
   })
 
   it('returns deltas in personal layer when baseline present', () => {

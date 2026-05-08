@@ -1,0 +1,179 @@
+{
+  "common": {
+    "save": "Yadda saxla",
+    "cancel": "Ləğv et",
+    "retry": "Yenidən cəhd",
+    "close": "Bağla",
+    "loading": "Yüklənir…",
+    "appName": "PosturePal"
+  },
+  "nav": {
+    "monitor": "İzləyici",
+    "dashboard": "Hesabat",
+    "settings": "Tənzimləmələr"
+  },
+  "monitor": {
+    "badge": "Postur izləməsi",
+    "recalibrate": "Yenidən kalibrasiya",
+    "footer": {
+      "pose": "Pose",
+      "delegate": "Hesablayıcı",
+      "fps": "FPS",
+      "sensitivity": "Həssaslıq",
+      "clinical": "Klinik",
+      "on": "açıq",
+      "off": "bağlı"
+    }
+  },
+  "onboarding": {
+    "title": "PosturePal-a xoş gəlmisiniz",
+    "description": "Postürünüzü izləmək üçün kameraya icazə tələb olunur. Bütün hesablamalar lokaldır — heç bir şəkil göndərilmir.",
+    "getStarted": "Başlayaq"
+  },
+  "webcam": {
+    "requesting": "Kamera tələb olunur…",
+    "denied": "Kameraya icazə rədd edildi. İcazə vermək üçün Sistem Tənzimləmələrini açın.",
+    "noDevice": "Kamera tapılmadı.",
+    "openSettings": "Tənzimləmələri aç",
+    "retry": "Yenidən"
+  },
+  "calibration": {
+    "title": "Kalibrasiya",
+    "description": "Kameranıza baxaraq təbii oturun. 5 saniyəlik normal postürünüzün baseline-ı qeyd olunacaq. Sonradan xəbərdarlıqlar həm bu baseline-a, həm də klinik təhlükəsiz aralıqlara qarşı yoxlanılır.",
+    "start": "Kalibrasiyanı başlat",
+    "getReady": "Hazır olun…",
+    "capturing": "Tərpənməyin — baseline yığılır",
+    "samplesCaptured": "{{count}} ölçüdən baseline qeyd edildi — klinik sağlam aralıqdadır.",
+    "looksGood": "Hər şey yaxşıdır",
+    "recapture": "Yenidən kalibrasiya",
+    "metric": {
+      "cva": "CVA",
+      "asymmetry": "Asimmetriya",
+      "alignment": "Düzlənmə"
+    },
+    "unsafe": {
+      "title": "Kalibrasiya sağlam aralıqdan kənarda",
+      "description": "Görünür ki, kalibrasiya zamanı postürünüz klinik sağlam aralıqdan kənardadır. Düzgün izləmə üçün belinizi düz tutun, çiyinlərinizi rahatlaşdırın və başınızı çiyinlərinizin üstündə düzləndirin. Yenidən cəhd edək?",
+      "tryAgain": "Yenidən",
+      "skipAdvanced": "Yenə də keç (təcrübəli)",
+      "vsHealthy": "vs ≥{{value}}{{unit}}",
+      "ok": "OK",
+      "skipDialog": {
+        "title": "Təhlükəsizlik yoxlamasını keçməli?",
+        "description": "Klinik sağlam aralıqdan kənar baseline-lar həqiqi postur problemlərini gizlədə bilər. Klinik təhlükəsizlik qatı yenə də pozuntuları aşkar edəcək — amma düzgün şəxsi müqayisə üçün düzgün postürlə yenidən cəhd etmək tövsiyə olunur.",
+        "cancel": "Ləğv et",
+        "confirm": "Yenə də keç"
+      }
+    }
+  },
+  "status": {
+    "good": "Yaxşı postur",
+    "warning": "Postürünüzü düzəldin",
+    "poor": "Pis postur aşkarlandı",
+    "details": {
+      "good": "Yaxşı postur (sağlam aralıqda)",
+      "personalWarning": "Baseline-dan kiçik sapma",
+      "personalPoor": "Baseline-dan əhəmiyyətli sapma",
+      "clinicalWarning": "Klinik həddə yaxınlaşır ({{metric}}: {{value}})",
+      "clinicalPoor": "Klinik təhlükəsiz aralıqdan kənar ({{metric}}: {{value}} {{op}} {{cutoff}})",
+      "both": "{{clinical}} — və {{personal}}",
+      "noBaseline": "Sağlam aralıqda (hələ baseline yoxdur)"
+    },
+    "metric": {
+      "cva": "CVA",
+      "asymmetry": "asimmetriya",
+      "alignment": "düzlənmə"
+    },
+    "badge": {
+      "clinical": "klinik",
+      "personal": "şəxsi",
+      "healthy": "sağlam aralıq"
+    }
+  },
+  "baseline": {
+    "title": "Sizin baseline-ınız",
+    "vsBaseline": "{{value}} baseline-a görə",
+    "metric": {
+      "cva": "CVA",
+      "asymmetry": "Asimmetriya",
+      "alignment": "Düzlənmə"
+    }
+  },
+  "dashboard": {
+    "title": "Hesabat",
+    "subtitle": "Vaxta görə postur statistikaları.",
+    "refresh": "Yenilə",
+    "loadFailed": "Hesabat yüklənmədi",
+    "loading": "Hesabat yüklənir…",
+    "summary": {
+      "good": "Yaxşı",
+      "warning": "Xəbərdarlıq",
+      "poor": "Pis",
+      "minutesToday": "dəq bu gün"
+    },
+    "today": {
+      "title": "Bugünkü zaman cədvəli",
+      "description": "Saatlıq postur keyfiyyəti (status üzrə dəqiqələr)."
+    },
+    "week": {
+      "title": "Bu həftə",
+      "description": "Son 7 günün gündəlik cəmləri."
+    },
+    "session": {
+      "title": "Aktiv sessiya",
+      "started": "Başladı {{time}}",
+      "live": "canlı"
+    },
+    "empty": {
+      "title": "Hələ məlumat yoxdur",
+      "description": "İzləyici tabından kalibrasiya edin və izləməyə başlayın. Hesabat məlumat toplandıqca dolacaq (hər 30 saniyədə bir snapshot)."
+    }
+  },
+  "settings": {
+    "title": "Tənzimləmələr",
+    "subtitle": "PosturePal-ın necə izlədiyini və xəbərdarlıq verdiyini konfiqurasiya edin.",
+    "detection": {
+      "title": "Aşkarlama",
+      "description": "Kalibrasiya sizin fərdi postürünüzü götürür. Həssaslıq sapmaların hansı səviyyədə xəbərdarlıq və ya pis verdikt verəcəyini idarə edir.",
+      "camera": "Kamera",
+      "defaultCamera": "Standart kamera",
+      "sensitivity": "Həssaslıq",
+      "sensitivityDescription": {
+        "low": "Aşağı — baseline-dan kiçik sapmalarda xəbərdarlıq (10% / 20%)",
+        "medium": "Orta — balanslaşdırılmış (15% / 30%)",
+        "high": "Yüksək — yalnız böyük sapmalarda xəbərdarlıq (25% / 50%)"
+      },
+      "level": {
+        "low": "Aşağı",
+        "medium": "Orta",
+        "high": "Yüksək"
+      },
+      "clinicalLayer": {
+        "label": "Klinik təhlükəsizlik qatından istifadə et",
+        "description": "Şəxsi baseline-la yanaşı klinik tədqiqatdan mütləq hədlər əlavə edir. Status pis olan qata əsasən qərarlaşır — pis kalibrasiyalardan qoruyur."
+      },
+      "calibration": {
+        "label": "Kalibrasiya baseline-ı",
+        "captured": "Qeyd edildi {{time}}",
+        "missing": "Hələ baseline yoxdur — İzləyici ekranından kalibrasiya edin.",
+        "recalibrate": "Yenidən kalibrasiya"
+      }
+    },
+    "notifications": {
+      "title": "Bildirişlər",
+      "description": "Postürünüz diqqət tələb etdikdə xəbərdarlıqlar.",
+      "enable": "Sistem bildirişlərini aktiv et",
+      "playSound": "Pis postur zamanı səs çal",
+      "test": {
+        "label": "Test bildirişi",
+        "description": "OS-in PosturePal-a bildiriş göndərməyə icazə verdiyini yoxlayın.",
+        "send": "Test göndər"
+      }
+    },
+    "language": {
+      "title": "Dil",
+      "english": "English",
+      "turkish": "Türkçe"
+    }
+  }
+}

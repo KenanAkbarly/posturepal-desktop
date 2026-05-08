@@ -8,9 +8,11 @@ import Dashboard from '@/pages/Dashboard'
 import Settings from '@/pages/Settings'
 import { hydrateFromDb } from '@/lib/settingsHydration'
 import { useSettings } from '@/lib/settingsStore'
+import { useLanguageSync } from '@/hooks/useLanguageSync'
 
 function App(): React.JSX.Element {
   const { hydrated } = useSettings()
+  useLanguageSync()
 
   useEffect(() => {
     void hydrateFromDb()

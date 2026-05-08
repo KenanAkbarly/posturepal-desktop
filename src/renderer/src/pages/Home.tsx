@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { WebcamView, type WebcamViewHandle } from '@/components/WebcamView'
@@ -13,6 +14,7 @@ import { settingsStore, useSettings } from '@/lib/settingsStore'
 import { api } from '@/lib/ipc'
 
 export default function Home(): React.JSX.Element {
+  const { t } = useTranslation()
   const webcamRef = useRef<WebcamViewHandle | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const settings = useSettings()
@@ -37,7 +39,7 @@ export default function Home(): React.JSX.Element {
 
   return (
     <div className="flex flex-1 flex-col items-center gap-6 p-8">
-      <Badge variant="secondary">Posture monitoring</Badge>
+      <Badge variant="secondary">{t('monitor.badge')}</Badge>
       <div className="relative w-full max-w-3xl">
         <WebcamView ref={setVideoRef} />
         <SkeletonOverlay
@@ -57,30 +59,34 @@ export default function Home(): React.JSX.Element {
           />
           <BaselineCard baseline={baseline} deltas={classification?.personal?.deltas ?? null} />
           <Button variant="ghost" size="sm" onClick={() => settingsStore.setBaseline(null)}>
-            Recalibrate
+            {t('monitor.recalibrate')}
           </Button>
         </>
       )}
 
       <div className="flex items-center gap-3 text-xs text-muted-foreground">
         <span>
-          Pose: <span className="font-mono text-foreground">{pose.status}</span>
+          {t('monitor.footer.pose')}:{' '}
+          <span className="font-mono text-foreground">{pose.status}</span>
         </span>
         {pose.delegate && (
           <span>
-            Delegate: <span className="font-mono text-foreground">{pose.delegate}</span>
+            {t('monitor.footer.delegate')}:{' '}
+            <span className="font-mono text-foreground">{pose.delegate}</span>
           </span>
         )}
         <span>
-          FPS: <span className="font-mono text-foreground">{pose.fps}</span>
+          {t('monitor.footer.fps')}:{' '}
+          <span className="font-mono text-foreground">{pose.fps}</span>
         </span>
         <span>
-          Sensitivity: <span className="font-mono text-foreground">{settings.sensitivity}</span>
+          {t('monitor.footer.sensitivity')}:{' '}
+          <span className="font-mono text-foreground">{settings.sensitivity}</span>
         </span>
         <span>
-          Clinical:{' '}
+          {t('monitor.footer.clinical')}:{' '}
           <span className="font-mono text-foreground">
-            {settings.useClinicalLayer ? 'on' : 'off'}
+            {settings.useClinicalLayer ? t('monitor.footer.on') : t('monitor.footer.off')}
           </span>
         </span>
       </div>

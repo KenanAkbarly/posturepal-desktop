@@ -1,0 +1,179 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "close": "Close",
+    "loading": "Loading…",
+    "appName": "PosturePal"
+  },
+  "nav": {
+    "monitor": "Monitor",
+    "dashboard": "Dashboard",
+    "settings": "Settings"
+  },
+  "monitor": {
+    "badge": "Posture monitoring",
+    "recalibrate": "Recalibrate",
+    "footer": {
+      "pose": "Pose",
+      "delegate": "Delegate",
+      "fps": "FPS",
+      "sensitivity": "Sensitivity",
+      "clinical": "Clinical",
+      "on": "on",
+      "off": "off"
+    }
+  },
+  "onboarding": {
+    "title": "Welcome to PosturePal",
+    "description": "We will need access to your camera to monitor your posture. All processing happens locally — no images are uploaded.",
+    "getStarted": "Get started"
+  },
+  "webcam": {
+    "requesting": "Requesting camera…",
+    "denied": "Camera access denied. Open System Settings to grant permission.",
+    "noDevice": "No camera found.",
+    "openSettings": "Open settings",
+    "retry": "Retry"
+  },
+  "calibration": {
+    "title": "Calibration",
+    "description": "Sit naturally facing your camera. We will capture a 5-second baseline of your normal posture. Future alerts compare against this baseline AND against clinical safe ranges.",
+    "start": "Start calibration",
+    "getReady": "Get ready…",
+    "capturing": "Hold still — capturing baseline",
+    "samplesCaptured": "Baseline captured from {{count}} samples — within healthy clinical range.",
+    "looksGood": "Looks good",
+    "recapture": "Recalibrate",
+    "metric": {
+      "cva": "CVA",
+      "asymmetry": "Asymmetry",
+      "alignment": "Alignment"
+    },
+    "unsafe": {
+      "title": "Calibration outside healthy range",
+      "description": "It seems your posture during calibration was outside the clinical healthy range. For accurate monitoring, sit with your back straight, shoulders relaxed, and head aligned over your shoulders. Try again?",
+      "tryAgain": "Try again",
+      "skipAdvanced": "Skip anyway (advanced)",
+      "vsHealthy": "vs ≥{{value}}{{unit}}",
+      "ok": "OK",
+      "skipDialog": {
+        "title": "Skip safety check?",
+        "description": "Baselines outside the clinical healthy range can mask real posture issues. The clinical safety layer will still catch breaches even if you skip — but for accurate personalized comparison, retrying with good posture is strongly recommended.",
+        "cancel": "Cancel",
+        "confirm": "Skip anyway"
+      }
+    }
+  },
+  "status": {
+    "good": "Good posture",
+    "warning": "Adjust your posture",
+    "poor": "Poor posture detected",
+    "details": {
+      "good": "Good posture (within healthy range)",
+      "personalWarning": "Slight deviation from your baseline",
+      "personalPoor": "Significant deviation from your baseline",
+      "clinicalWarning": "Approaching clinical threshold ({{metric}}: {{value}})",
+      "clinicalPoor": "Below clinical safe range ({{metric}}: {{value}} {{op}} {{cutoff}})",
+      "both": "{{clinical}} — and {{personal}}",
+      "noBaseline": "Within healthy range (no baseline yet)"
+    },
+    "metric": {
+      "cva": "CVA",
+      "asymmetry": "asymmetry",
+      "alignment": "alignment"
+    },
+    "badge": {
+      "clinical": "clinical",
+      "personal": "personal",
+      "healthy": "healthy range"
+    }
+  },
+  "baseline": {
+    "title": "Your baseline",
+    "vsBaseline": "{{value}} vs baseline",
+    "metric": {
+      "cva": "CVA",
+      "asymmetry": "Asymmetry",
+      "alignment": "Alignment"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Posture statistics across time.",
+    "refresh": "Refresh",
+    "loadFailed": "Couldn't load dashboard",
+    "loading": "Loading dashboard…",
+    "summary": {
+      "good": "Good",
+      "warning": "Warning",
+      "poor": "Poor",
+      "minutesToday": "min today"
+    },
+    "today": {
+      "title": "Today's timeline",
+      "description": "Posture quality per hour (minutes per status)."
+    },
+    "week": {
+      "title": "This week",
+      "description": "Daily totals across the last 7 days."
+    },
+    "session": {
+      "title": "Active session",
+      "started": "Started {{time}}",
+      "live": "live"
+    },
+    "empty": {
+      "title": "No data yet",
+      "description": "Calibrate from the Monitor tab to start tracking. The Dashboard will fill in as data accumulates (one snapshot every 30 seconds)."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure how PosturePal monitors and alerts you.",
+    "detection": {
+      "title": "Detection",
+      "description": "Calibration captures your individual posture. Sensitivity controls how much deviation triggers a warning vs poor verdict.",
+      "camera": "Camera",
+      "defaultCamera": "Default camera",
+      "sensitivity": "Sensitivity",
+      "sensitivityDescription": {
+        "low": "Low — alerts on small deviations from your baseline (10% / 20%)",
+        "medium": "Medium — balanced (15% / 30%)",
+        "high": "High — alerts only on large deviations (25% / 50%)"
+      },
+      "level": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      "clinicalLayer": {
+        "label": "Use clinical safety layer",
+        "description": "Adds absolute thresholds from clinical research alongside your personal baseline. Status falls back to whichever layer is worse — protects against bad calibrations."
+      },
+      "calibration": {
+        "label": "Calibration baseline",
+        "captured": "Captured {{time}}",
+        "missing": "No baseline yet — calibrate from the Monitor screen.",
+        "recalibrate": "Recalibrate"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Alerts when your posture needs attention.",
+      "enable": "Enable native notifications",
+      "playSound": "Play sound on poor posture",
+      "test": {
+        "label": "Test notification",
+        "description": "Verify your OS allows PosturePal to send notifications.",
+        "send": "Send test"
+      }
+    },
+    "language": {
+      "title": "Language",
+      "english": "English",
+      "turkish": "Türkçe"
+    }
+  }
+}

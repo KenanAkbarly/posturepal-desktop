@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
@@ -14,45 +15,37 @@ import { settingsStore, useSettings, type AppSettings } from '@/lib/settingsStor
 import { api } from '@/lib/ipc'
 import { TOLERANCES, type SensitivityLevel } from '@/posture/calibration'
 
-const SENSITIVITY_DESCRIPTION: Record<SensitivityLevel, string> = {
-  low: 'Low — alerts on small deviations from your baseline (10% / 20%)',
-  medium: 'Medium — balanced (15% / 30%)',
-  high: 'High — alerts only on large deviations (25% / 50%)'
-}
-
 export default function Settings(): React.JSX.Element {
+  const { t } = useTranslation()
   const settings = useSettings()
   const update = (patch: Partial<AppSettings>): void => settingsStore.set(patch)
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">Configure how PosturePal monitors and alerts you.</p>
+        <h1 className="text-3xl font-bold tracking-tight">{t('settings.title')}</h1>
+        <p className="text-muted-foreground">{t('settings.subtitle')}</p>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Detection</CardTitle>
-          <CardDescription>
-            Calibration captures your individual posture. Sensitivity controls how much deviation
-            triggers a warning vs poor verdict.
-          </CardDescription>
+          <CardTitle>{t('settings.detection.title')}</CardTitle>
+          <CardDescription>{t('settings.detection.description')}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Camera</label>
+            <label className="text-sm font-medium">{t('settings.detection.camera')}</label>
             <Select>
               <SelectTrigger>
-                <SelectValue placeholder="Default camera" />
+                <SelectValue placeholder={t('settings.detection.defaultCamera')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="default">Default camera</SelectItem>
+                <SelectItem value="default">{t('settings.detection.defaultCamera')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <Separator />
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Sensitivity</label>
+            <label className="text-sm font-medium">{t('settings.detection.sensitivity')}</label>
             <Select
               value={settings.sensitivity}
               onValueChange={(v) => update({ sensitivity: v as SensitivityLevel })}
@@ -63,24 +56,24 @@ export default function Settings(): React.JSX.Element {
               <SelectContent>
                 {(Object.keys(TOLERANCES) as SensitivityLevel[]).map((level) => (
                   <SelectItem key={level} value={level}>
-                    {level.charAt(0).toUpperCase() + level.slice(1)}
+                    {t(`settings.detection.level.${level}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              {SENSITIVITY_DESCRIPTION[settings.sensitivity]}
+              {t(`settings.detection.sensitivityDescription.${settings.sensitivity}`)}
             </p>
           </div>
           <Separator />
           <div className="flex items-start justify-between gap-4">
             <div className="flex flex-col">
               <span className="flex items-center gap-2 text-sm">
-                <ShieldAlert className="h-4 w-4 text-red-500" /> Use clinical safety layer
+                <ShieldAlert className="h-4 w-4 text-red-500" />
+                {t('settings.detection.clinicalLayer.label')}
               </span>
               <span className="max-w-md text-xs text-muted-foreground">
-                Adds absolute thresholds from clinical research alongside your personal baseline.
-                Status falls back to whichever layer is worse — protects against bad calibrations.
+                {t('settings.detection.clinicalLayer.description')}
               </span>
             </div>
             <Switch
@@ -91,11 +84,13 @@ export default function Settings(): React.JSX.Element {
           <Separator />
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-sm">Calibration baseline</span>
+              <span className="text-sm">{t('settings.detection.calibration.label')}</span>
               <span className="text-xs text-muted-foreground">
                 {settings.baseline
-                  ? `Captured ${new Date(settings.baseline.capturedAt).toLocaleString()}`
-                  : 'No baseline yet — calibrate from the Monitor screen.'}
+                  ? t('settings.detection.calibration.captured', {
+                      time: new Date(settings.baseline.capturedAt).toLocaleString()
+                    })
+                  : t('settings.detection.calibration.missing')}
               </span>
             </div>
             <Button
@@ -104,7 +99,8 @@ export default function Settings(): React.JSX.Element {
               disabled={!settings.baseline}
               onClick={() => settingsStore.setBaseline(null)}
             >
-              <RotateCcw className="mr-2 h-4 w-4" /> Recalibrate
+              <RotateCcw className="mr-2 h-4 w-4" />
+              {t('settings.detection.calibration.recalibrate')}
             </Button>
           </div>
         </CardContent>
@@ -112,31 +108,31 @@ export default function Settings(): React.JSX.Element {
 
       <Card>
         <CardHeader>
-          <CardTitle>Notifications</CardTitle>
-          <CardDescription>Alerts when your posture needs attention.</CardDescription>
+          <CardTitle>{t('settings.notifications.title')}</CardTitle>
+          <CardDescription>{t('settings.notifications.description')}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm">Enable native notifications</span>
+            <span className="text-sm">{t('settings.notifications.enable')}</span>
             <Switch
               checked={settings.notifications}
               onCheckedChange={(v) => update({ notifications: v })}
             />
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm">Play sound on poor posture</span>
+            <span className="text-sm">{t('settings.notifications.playSound')}</span>
             <Switch checked={settings.sound} onCheckedChange={(v) => update({ sound: v })} />
           </div>
           <Separator />
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-sm">Test notification</span>
+              <span className="text-sm">{t('settings.notifications.test.label')}</span>
               <span className="text-xs text-muted-foreground">
-                Verify your OS allows PosturePal to send notifications.
+                {t('settings.notifications.test.description')}
               </span>
             </div>
             <Button variant="outline" size="sm" onClick={() => api.testNotification()}>
-              <Bell className="mr-2 h-4 w-4" /> Send test
+              <Bell className="mr-2 h-4 w-4" /> {t('settings.notifications.test.send')}
             </Button>
           </div>
         </CardContent>
@@ -144,7 +140,7 @@ export default function Settings(): React.JSX.Element {
 
       <Card>
         <CardHeader>
-          <CardTitle>Language</CardTitle>
+          <CardTitle>{t('settings.language.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <Select
@@ -155,8 +151,8 @@ export default function Settings(): React.JSX.Element {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="tr">Türkçe</SelectItem>
+              <SelectItem value="en">{t('settings.language.english')}</SelectItem>
+              <SelectItem value="tr">{t('settings.language.turkish')}</SelectItem>
             </SelectContent>
           </Select>
         </CardContent>
