@@ -3,10 +3,25 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    environment: 'jsdom',
     globals: true,
-    include: ['src/renderer/**/*.{test,spec}.{ts,tsx}'],
-    setupFiles: ['./vitest.setup.ts']
+    setupFiles: ['./vitest.setup.ts'],
+    projects: [
+      {
+        test: {
+          name: 'renderer',
+          environment: 'jsdom',
+          include: ['src/renderer/**/*.{test,spec}.{ts,tsx}'],
+          setupFiles: ['./vitest.setup.ts']
+        }
+      },
+      {
+        test: {
+          name: 'main',
+          environment: 'node',
+          include: ['src/main/**/*.{test,spec}.ts']
+        }
+      }
+    ]
   },
   resolve: {
     alias: {
