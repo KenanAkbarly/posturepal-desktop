@@ -85,25 +85,25 @@
 ## Day 3 — Data Layer & Marketing Site (May 10)
 
 ### Morning: SQLite Integration
-- 🔴 Install better-sqlite3, configure for Electron
-- 🔴 Create database initialization in main process
-- 🔴 Implement schema migrations
-- 🔴 IPC handlers: insertSnapshot, getSessionStats, getDailyStats
-- 🔴 Save snapshots every 30s (not every frame)
-- 🔴 Build Dashboard page with Recharts
-- 🔴 Today timeline view + this-week bar chart
+- 🟢 Install better-sqlite3, configure for Electron — 2026-05-08 (electron-rebuild for ABI 140)
+- 🟢 Create database initialization in main process — 2026-05-08 (`src/main/database.ts`)
+- 🟢 Implement schema migrations — 2026-05-08 (versioned MIGRATIONS array, idempotent)
+- 🟢 IPC handlers: insertSnapshot, getSessionStats, getDailyStats — 2026-05-08 (11 DB channels, namespaced under `window.api.db.*`)
+- 🟢 Save snapshots every 30s (not every frame) — 2026-05-08 (`useSnapshotPersistence` hook, session lifecycle)
+- 🟢 Build Dashboard page with Recharts — 2026-05-08
+- 🟢 Today timeline view + this-week bar chart — 2026-05-08 (stacked bars, ResponsiveContainer, auto-refresh 30s)
 
 ### Midday: i18n & Build
-- 🔴 Install and configure i18next
-- 🔴 Create `en.json` and `tr.json` translation files
-- 🔴 Wire all strings through translation
-- 🔴 Language switcher in Settings
-- 🔴 Configure electron-builder for macOS (.dmg) and Windows (.exe)
-- 🔴 Test production build on macOS
-- 🔴 Test production build on Windows (or VM/cross-compile)
+- 🟢 Install and configure i18next — 2026-05-08
+- 🟢 Create `en.json` and `tr.json` translation files — 2026-05-08 (88 keys, 7 namespaces)
+- 🟢 Wire all strings through translation — 2026-05-08 (all components + pages; hybrid-classifier emits structured `{key, values}` for testability)
+- 🟢 Language switcher in Settings — 2026-05-08 (DB-persisted via Part 1 store)
+- 🟢 Configure electron-builder for macOS (.dmg) and Windows (.exe) — 2026-05-08 (hardenedRuntime, NSCameraUsageDescription, asarUnpack resources/**)
+- 🟡 Test production build on macOS — Day 3 (build attempt logged below)
+- 🔴 Test production build on Windows (or VM/cross-compile) — deferred to Day 4
 
 ### Evening: Marketing Site
-- 🔴 Initialize Next.js 14 project (separate repo: `posturepal-web`)
+- 🔴 Initialize Next.js 14 project (separate repo: `posturepal-web`) — *out of scope this session, Day 4 candidate*
 - 🔴 Configure Tailwind, shadcn/ui, next-intl
 - 🔴 Build Hero, Features, How It Works, Privacy, Download sections
 - 🔴 Add language switcher
