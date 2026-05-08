@@ -8,6 +8,7 @@ import { StatusIndicator } from '@/components/StatusIndicator'
 import { BaselineCard } from '@/components/BaselineCard'
 import { usePostureMonitor } from '@/hooks/usePostureMonitor'
 import { useStatusAlerts } from '@/hooks/useStatusAlerts'
+import { useSnapshotPersistence } from '@/hooks/useSnapshotPersistence'
 import { settingsStore, useSettings } from '@/lib/settingsStore'
 import { api } from '@/lib/ipc'
 
@@ -28,6 +29,7 @@ export default function Home(): React.JSX.Element {
     useClinicalLayer: settings.useClinicalLayer
   })
   useStatusAlerts(status, { notifications: settings.notifications, sound: settings.sound })
+  useSnapshotPersistence({ enabled: !!baseline, smoothed, status })
 
   useEffect(() => {
     void api.setTrayStatus(baseline ? status : 'idle')

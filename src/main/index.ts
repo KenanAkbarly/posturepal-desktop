@@ -4,9 +4,11 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { registerIpcHandlers } from './ipc'
 import { createTray } from './tray'
+import { PostureDatabase } from './database'
 
 let mainWindow: BrowserWindow | null = null
 let isQuitting = false
+let database: PostureDatabase | null = null
 
 function getMainWindow(): BrowserWindow | null {
   return mainWindow
@@ -67,7 +69,11 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  registerIpcHandlers(getMainWindow)
+  database = new PostureDatabase(join(app.getPath('userData'), 'posturepal.db'))
+  database.closeAllOpenSessions(new Date().toISOString())
+  console.log(`[db] schema version=${database.currentVersion()}`)
+
+  registerIpcHandlers(getMainWindow, database)
   createWindow()
   createTray(getMainWindow)
 
@@ -79,6 +85,11 @@ app.whenReady().then(() => {
 
 app.on('before-quit', () => {
   isQuitting = true
+  if (database) {
+    database.closeAllOpenSessions(new Date().toISOString())
+    database.close()
+    database = null
+  }
 })
 
 app.on('window-all-closed', () => {
