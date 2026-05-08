@@ -99,7 +99,7 @@
 - 🟢 Wire all strings through translation — 2026-05-08 (all components + pages; hybrid-classifier emits structured `{key, values}` for testability)
 - 🟢 Language switcher in Settings — 2026-05-08 (DB-persisted via Part 1 store)
 - 🟢 Configure electron-builder for macOS (.dmg) and Windows (.exe) — 2026-05-08 (hardenedRuntime, NSCameraUsageDescription, asarUnpack resources/**)
-- 🟡 Test production build on macOS — Day 3 (build attempt logged below)
+- 🟢 Test production build on macOS — 2026-05-08 (`dist/posturepal-desktop-0.0.1.dmg` 168 MB, signed with local Apple Development cert, notarization skipped per academic-prototype policy)
 - 🔴 Test production build on Windows (or VM/cross-compile) — deferred to Day 4
 
 ### Evening: Marketing Site
