@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, shell } from 'electron'
+import { BrowserWindow, ipcMain, shell, systemPreferences } from 'electron'
 import { IPC } from '../preload/channels'
 import { playAlertSound, showPostureNotification, showTestNotification } from './notifications'
 import { setTrayStatus, type TrayStatus } from './tray'
@@ -21,6 +21,18 @@ export function registerIpcHandlers(
     } else if (process.platform === 'win32') {
       await shell.openExternal('ms-settings:privacy-webcam')
     }
+  })
+
+  ipcMain.handle(IPC.SYSTEM_GET_CAMERA_STATUS, () => {
+    if (process.platform !== 'darwin') return 'unknown'
+    return systemPreferences.getMediaAccessStatus('camera')
+  })
+
+  ipcMain.handle(IPC.SYSTEM_REQUEST_CAMERA_ACCESS, async () => {
+    if (process.platform !== 'darwin') return true
+    const granted = await systemPreferences.askForMediaAccess('camera')
+    console.log(`[ipc] camera access request → ${granted ? 'granted' : 'denied'}`)
+    return granted
   })
 
   ipcMain.handle(IPC.NOTIFY_POSTURE, (_event, level: 'warning' | 'poor') => {

@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Camera, CameraOff, Loader2, VideoOff } from 'lucide-react'
+import { Camera, CameraOff, Loader2, ShieldQuestion, VideoOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useWebcam } from '@/hooks/useWebcam'
@@ -15,7 +15,7 @@ export const WebcamView = forwardRef<WebcamViewHandle, { className?: string }>(f
   ref
 ) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
-  const { stream, status, retry } = useWebcam()
+  const { stream, status, error, retry, requestAccess } = useWebcam()
   const { t } = useTranslation()
 
   useImperativeHandle(ref, () => ({ videoElement: videoRef.current }), [])
@@ -41,7 +41,7 @@ export const WebcamView = forwardRef<WebcamViewHandle, { className?: string }>(f
           playsInline
           className="h-full w-full object-cover"
         />
-        {status === 'requesting' && (
+        {(status === 'requesting' || status === 'requesting-permission') && (
           <Overlay>
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             <p className="text-sm text-muted-foreground">{t('webcam.requesting')}</p>
@@ -51,13 +51,16 @@ export const WebcamView = forwardRef<WebcamViewHandle, { className?: string }>(f
           <Overlay>
             <CameraOff className="h-8 w-8 text-destructive" />
             <p className="max-w-xs text-center text-sm text-muted-foreground">
-              {t('webcam.denied')}
+              {error ?? t('webcam.denied')}
             </p>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button size="sm" onClick={() => void requestAccess()}>
+                <ShieldQuestion className="mr-2 h-4 w-4" /> Request access
+              </Button>
               <Button size="sm" variant="outline" onClick={() => api.openCameraSettings()}>
                 {t('webcam.openSettings')}
               </Button>
-              <Button size="sm" onClick={retry}>
+              <Button size="sm" variant="ghost" onClick={retry}>
                 <Camera className="mr-2 h-4 w-4" /> {t('webcam.retry')}
               </Button>
             </div>
@@ -66,7 +69,7 @@ export const WebcamView = forwardRef<WebcamViewHandle, { className?: string }>(f
         {status === 'no-device' && (
           <Overlay>
             <VideoOff className="h-8 w-8 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">{t('webcam.noDevice')}</p>
+            <p className="text-sm text-muted-foreground">{error ?? t('webcam.noDevice')}</p>
             <Button size="sm" onClick={retry}>
               {t('webcam.retry')}
             </Button>
@@ -75,7 +78,9 @@ export const WebcamView = forwardRef<WebcamViewHandle, { className?: string }>(f
         {status === 'error' && (
           <Overlay>
             <CameraOff className="h-8 w-8 text-destructive" />
-            <p className="text-sm text-destructive">{t('webcam.requesting')}</p>
+            <p className="max-w-xs text-center text-sm text-destructive">
+              {error ?? t('webcam.requesting')}
+            </p>
             <Button size="sm" onClick={retry}>
               {t('webcam.retry')}
             </Button>

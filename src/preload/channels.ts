@@ -1,5 +1,7 @@
 export const IPC = {
   SYSTEM_OPEN_CAMERA_SETTINGS: 'system:openCameraSettings',
+  SYSTEM_GET_CAMERA_STATUS: 'system:getCameraStatus',
+  SYSTEM_REQUEST_CAMERA_ACCESS: 'system:requestCameraAccess',
   NOTIFY_POSTURE: 'notify:posture',
   NOTIFY_TEST: 'notify:test',
   SOUND_PLAY_ALERT: 'sound:playAlert',
