@@ -18,17 +18,23 @@ import {
 
 export type ClassificationReason = 'good' | 'clinical' | 'personal' | 'both' | 'no-baseline'
 
+export interface DetailDescriptor {
+  key: string
+  values?: Record<string, string | number>
+}
+
 export interface PersonalLayer {
   status: PostureStatus
-  details: string
+  detail: DetailDescriptor
   deltas: BaselineDeltas
 }
 
 export interface HybridClassification {
   status: PostureStatus
   reason: ClassificationReason
-  details: string
+  detail: DetailDescriptor
   clinical: ClinicalBreakdown
+  clinicalDetail: DetailDescriptor
   personal: PersonalLayer | null
 }
 
@@ -38,57 +44,37 @@ export interface HybridOptions {
   useClinicalLayer: boolean
 }
 
-const PERSONAL_LABEL: Record<PostureStatus, string> = {
-  good: 'Within your typical range',
-  warning: 'Slight deviation from your baseline',
-  poor: 'Significant deviation from your baseline'
+const PERSONAL_KEY: Record<PostureStatus, string> = {
+  good: 'status.details.good',
+  warning: 'status.details.personalWarning',
+  poor: 'status.details.personalPoor'
 }
 
-function clinicalDetail(metrics: PostureMetrics, breakdown: ClinicalBreakdown): string {
-  if (breakdown.status === 'good') return 'Within healthy range'
+function metricLabelKey(metric: ClinicalMetric): string {
+  return `status.metric.${metric === 'shoulderAsymmetry' ? 'asymmetry' : metric}`
+}
+
+function clinicalDetail(metrics: PostureMetrics, breakdown: ClinicalBreakdown): DetailDescriptor {
+  if (breakdown.status === 'good') return { key: 'status.details.good' }
   const m = breakdown.worstMetric
-  if (!m) return 'Within healthy range'
+  if (!m) return { key: 'status.details.good' }
   const info = CLINICAL_METRIC_INFO[m]
   const value = info.format(metrics[m])
   if (breakdown.status === 'warning') {
-    return `Approaching clinical threshold (${info.display}: ${value})`
-  }
-  const cutoff = clinicalCutoff(m)
-  return `Below clinical safe range (${info.display}: ${value} ${cutoffComparator(m)} ${cutoff})`
-}
-
-function clinicalCutoff(metric: ClinicalMetric): string {
-  const t = CLINICAL_THRESHOLDS[metric]
-  const info = CLINICAL_METRIC_INFO[metric]
-  return `${t.poor}${info.unit}`
-}
-
-function cutoffComparator(metric: ClinicalMetric): string {
-  return metric === 'shoulderAsymmetry' ? '>' : '<'
-}
-
-function combineDetails(
-  reason: ClassificationReason,
-  clinical: ClinicalBreakdown,
-  personal: PersonalLayer | null,
-  metrics: PostureMetrics
-): string {
-  switch (reason) {
-    case 'good':
-      return 'Good posture (within healthy range)'
-    case 'clinical':
-      return clinicalDetail(metrics, clinical)
-    case 'personal':
-      return personal ? PERSONAL_LABEL[personal.status] : 'Outside your baseline range'
-    case 'both': {
-      const clin = clinicalDetail(metrics, clinical)
-      const pers = personal ? PERSONAL_LABEL[personal.status] : 'deviating from your baseline'
-      return `${clin} — and ${pers.toLowerCase()}`
+    return {
+      key: 'status.details.clinicalWarning',
+      values: { metricKey: metricLabelKey(m), value }
     }
-    case 'no-baseline':
-      return clinical.status === 'good'
-        ? 'Within healthy range (no baseline yet)'
-        : clinicalDetail(metrics, clinical)
+  }
+  const cutoff = `${CLINICAL_THRESHOLDS[m].poor}${info.unit}`
+  return {
+    key: 'status.details.clinicalPoor',
+    values: {
+      metricKey: metricLabelKey(m),
+      value,
+      op: m === 'shoulderAsymmetry' ? '>' : '<',
+      cutoff
+    }
   }
 }
 
@@ -100,6 +86,7 @@ export function classifyHybrid(
 
   const clinical = classifyAgainstClinical(metrics)
   const clinicalStatus = useClinicalLayer ? clinical.status : 'good'
+  const clinicalDescriptor = clinicalDetail(metrics, clinical)
 
   let personal: PersonalLayer | null = null
   if (baseline) {
@@ -110,7 +97,7 @@ export function classifyHybrid(
     )
     personal = {
       status: personalStatus,
-      details: PERSONAL_LABEL[personalStatus],
+      detail: { key: PERSONAL_KEY[personalStatus] },
       deltas: applyBaseline(metrics, baseline)
     }
   }
@@ -132,9 +119,42 @@ export function classifyHybrid(
     reason = 'personal'
   }
 
-  const details = combineDetails(reason, clinical, personal, metrics)
+  let detail: DetailDescriptor
+  switch (reason) {
+    case 'good':
+      detail = { key: 'status.details.good' }
+      break
+    case 'clinical':
+      detail = clinicalDescriptor
+      break
+    case 'personal':
+      detail = personal?.detail ?? { key: 'status.details.personalWarning' }
+      break
+    case 'both':
+      detail = {
+        key: 'status.details.both',
+        values: {
+          clinicalKey: clinicalDescriptor.key,
+          personalKey: personal?.detail.key ?? 'status.details.personalWarning'
+        }
+      }
+      break
+    case 'no-baseline':
+      detail =
+        clinical.status === 'good'
+          ? { key: 'status.details.noBaseline' }
+          : clinicalDescriptor
+      break
+  }
 
-  return { status, reason, details, clinical, personal }
+  return {
+    status,
+    reason,
+    detail,
+    clinical,
+    clinicalDetail: clinicalDescriptor,
+    personal
+  }
 }
 
 export function isBaselineWithinClinicalHealthy(baseline: BaselineProfile): boolean {

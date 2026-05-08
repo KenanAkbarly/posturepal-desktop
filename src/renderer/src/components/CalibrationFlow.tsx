@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -35,6 +36,7 @@ interface CalibrationFlowProps {
 }
 
 export function CalibrationFlow({ metrics, onComplete }: CalibrationFlowProps): React.JSX.Element {
+  const { t } = useTranslation()
   const [phase, setPhase] = useState<Phase>('idle')
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [progress, setProgress] = useState(0)
@@ -105,28 +107,25 @@ export function CalibrationFlow({ metrics, onComplete }: CalibrationFlowProps): 
       <Card className="w-full max-w-xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" /> Calibration
+            <Sparkles className="h-5 w-5 text-primary" /> {t('calibration.title')}
           </CardTitle>
-          <CardDescription>
-            Sit naturally facing your camera. We will capture a 5-second baseline of your normal
-            posture. Future alerts compare against this baseline AND against clinical safe ranges.
-          </CardDescription>
+          <CardDescription>{t('calibration.description')}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           {phase === 'idle' && (
             <div className="flex justify-end">
-              <Button onClick={() => setPhase('countdown')}>Start calibration</Button>
+              <Button onClick={() => setPhase('countdown')}>{t('calibration.start')}</Button>
             </div>
           )}
           {phase === 'countdown' && (
             <div className="flex flex-col items-center gap-2 py-6">
               <div className="text-7xl font-bold tabular-nums">{countdown}</div>
-              <p className="text-sm text-muted-foreground">Get ready…</p>
+              <p className="text-sm text-muted-foreground">{t('calibration.getReady')}</p>
             </div>
           )}
           {phase === 'capturing' && (
             <div className="flex flex-col gap-3 py-4">
-              <p className="text-center text-sm">Hold still — capturing baseline</p>
+              <p className="text-center text-sm">{t('calibration.capturing')}</p>
               <Progress value={progress} />
             </div>
           )}
@@ -159,17 +158,16 @@ export function CalibrationFlow({ metrics, onComplete }: CalibrationFlowProps): 
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-500" /> Skip safety check?
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              {t('calibration.unsafe.skipDialog.title')}
             </DialogTitle>
             <DialogDescription>
-              Baselines outside the clinical healthy range can mask real posture issues. The
-              clinical safety layer will still catch breaches even if you skip — but for accurate
-              personalized comparison, retrying with good posture is strongly recommended.
+              {t('calibration.unsafe.skipDialog.description')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmSkipOpen(false)}>
-              Cancel
+              {t('calibration.unsafe.skipDialog.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -178,7 +176,7 @@ export function CalibrationFlow({ metrics, onComplete }: CalibrationFlowProps): 
                 acceptBaseline()
               }}
             >
-              Skip anyway
+              {t('calibration.unsafe.skipDialog.confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -198,21 +196,25 @@ function ReviewPanel({
   onRetry: () => void
   hideAccept?: boolean
 }): React.JSX.Element {
+  const { t } = useTranslation()
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-3 gap-3 rounded-lg border p-4 text-sm">
-        <Stat label="CVA" value={`${baseline.cva.toFixed(1)}°`} />
-        <Stat label="Asymmetry" value={`${baseline.shoulderAsymmetry.toFixed(1)}%`} />
-        <Stat label="Alignment" value={`${baseline.alignment.toFixed(1)}°`} />
+        <Stat label={t('calibration.metric.cva')} value={`${baseline.cva.toFixed(1)}°`} />
+        <Stat
+          label={t('calibration.metric.asymmetry')}
+          value={`${baseline.shoulderAsymmetry.toFixed(1)}%`}
+        />
+        <Stat label={t('calibration.metric.alignment')} value={`${baseline.alignment.toFixed(1)}°`} />
       </div>
       <p className="text-center text-xs text-muted-foreground">
-        Baseline captured from {baseline.sampleCount} samples — within healthy clinical range.
+        {t('calibration.samplesCaptured', { count: baseline.sampleCount })}
       </p>
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={onRetry}>
-          Recalibrate
+          {t('calibration.recapture')}
         </Button>
-        {!hideAccept && <Button onClick={onAccept}>Looks good</Button>}
+        {!hideAccept && <Button onClick={onAccept}>{t('calibration.looksGood')}</Button>}
       </div>
     </div>
   )
@@ -227,6 +229,7 @@ function UnsafePanel({
   onRetry: () => void
   onSkipRequest: () => void
 }): React.JSX.Element {
+  const { t } = useTranslation()
   const breakdown = classifyAgainstClinical({
     cva: baseline.cva,
     shoulderAsymmetry: baseline.shoulderAsymmetry,
@@ -241,27 +244,27 @@ function UnsafePanel({
       <div className="flex items-start gap-3">
         <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500" />
         <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium">Calibration outside healthy range</p>
-          <p className="text-xs text-muted-foreground">
-            It seems your posture during calibration was outside the clinical healthy range. For
-            accurate monitoring, sit with your back straight, shoulders relaxed, and head aligned
-            over your shoulders. Try again?
-          </p>
+          <p className="text-sm font-medium">{t('calibration.unsafe.title')}</p>
+          <p className="text-xs text-muted-foreground">{t('calibration.unsafe.description')}</p>
         </div>
       </div>
       <div className="grid grid-cols-3 gap-3 rounded border bg-background p-3 text-sm">
         {(Object.keys(breakdown.per) as ClinicalMetric[]).map((m) => {
           const value = m === 'shoulderAsymmetry' ? baseline.shoulderAsymmetry : baseline[m]
           const isOffending = offending.includes(m)
+          const labelKey = m === 'shoulderAsymmetry' ? 'asymmetry' : m
           return (
             <Stat
               key={m}
-              label={CLINICAL_METRIC_INFO[m].display}
+              label={t(`calibration.metric.${labelKey}`)}
               value={CLINICAL_METRIC_INFO[m].format(value)}
               detail={
                 isOffending
-                  ? `vs ≥${CLINICAL_THRESHOLDS[m].healthy}${CLINICAL_METRIC_INFO[m].unit}`
-                  : 'OK'
+                  ? t('calibration.unsafe.vsHealthy', {
+                      value: CLINICAL_THRESHOLDS[m].healthy,
+                      unit: CLINICAL_METRIC_INFO[m].unit
+                    })
+                  : t('calibration.unsafe.ok')
               }
               tone={isOffending ? 'bad' : 'good'}
             />
@@ -270,9 +273,9 @@ function UnsafePanel({
       </div>
       <div className="flex flex-wrap items-center justify-end gap-2">
         <Button variant="ghost" size="sm" onClick={onSkipRequest}>
-          Skip anyway (advanced)
+          {t('calibration.unsafe.skipAdvanced')}
         </Button>
-        <Button onClick={onRetry}>Try again</Button>
+        <Button onClick={onRetry}>{t('calibration.unsafe.tryAgain')}</Button>
       </div>
     </div>
   )

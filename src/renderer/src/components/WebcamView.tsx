@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Camera, CameraOff, Loader2, VideoOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -14,7 +15,8 @@ export const WebcamView = forwardRef<WebcamViewHandle, { className?: string }>(f
   ref
 ) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
-  const { stream, status, error, retry } = useWebcam()
+  const { stream, status, retry } = useWebcam()
+  const { t } = useTranslation()
 
   useImperativeHandle(ref, () => ({ videoElement: videoRef.current }), [])
 
@@ -42,19 +44,21 @@ export const WebcamView = forwardRef<WebcamViewHandle, { className?: string }>(f
         {status === 'requesting' && (
           <Overlay>
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">Requesting camera…</p>
+            <p className="text-sm text-muted-foreground">{t('webcam.requesting')}</p>
           </Overlay>
         )}
         {status === 'denied' && (
           <Overlay>
             <CameraOff className="h-8 w-8 text-destructive" />
-            <p className="max-w-xs text-center text-sm text-muted-foreground">{error}</p>
+            <p className="max-w-xs text-center text-sm text-muted-foreground">
+              {t('webcam.denied')}
+            </p>
             <div className="flex gap-2">
               <Button size="sm" variant="outline" onClick={() => api.openCameraSettings()}>
-                Open settings
+                {t('webcam.openSettings')}
               </Button>
               <Button size="sm" onClick={retry}>
-                <Camera className="mr-2 h-4 w-4" /> Retry
+                <Camera className="mr-2 h-4 w-4" /> {t('webcam.retry')}
               </Button>
             </div>
           </Overlay>
@@ -62,18 +66,18 @@ export const WebcamView = forwardRef<WebcamViewHandle, { className?: string }>(f
         {status === 'no-device' && (
           <Overlay>
             <VideoOff className="h-8 w-8 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">{error}</p>
+            <p className="text-sm text-muted-foreground">{t('webcam.noDevice')}</p>
             <Button size="sm" onClick={retry}>
-              Retry
+              {t('webcam.retry')}
             </Button>
           </Overlay>
         )}
         {status === 'error' && (
           <Overlay>
             <CameraOff className="h-8 w-8 text-destructive" />
-            <p className="text-sm text-destructive">{error}</p>
+            <p className="text-sm text-destructive">{t('webcam.requesting')}</p>
             <Button size="sm" onClick={retry}>
-              Retry
+              {t('webcam.retry')}
             </Button>
           </Overlay>
         )}
