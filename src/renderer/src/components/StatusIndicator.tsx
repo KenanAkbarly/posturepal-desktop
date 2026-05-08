@@ -5,12 +5,13 @@ import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { PostureMetrics, PostureStatus } from '@/posture/types'
-import type { DetailDescriptor, HybridClassification } from '@/posture/hybrid-classifier'
+import type { HybridClassification } from '@/posture/hybrid-classifier'
 import {
   classifyAsymmetryClinical,
   classifyCvaClinical,
   classifyAlignmentClinical
 } from '@/posture/clinical-thresholds'
+import { resolveDetail } from '@/lib/resolveDetail'
 
 interface StatusIndicatorProps {
   status: PostureStatus
@@ -102,20 +103,6 @@ export function StatusIndicator({
       </CardContent>
     </Card>
   )
-}
-
-function resolveDetail(t: (key: string, values?: Record<string, unknown>) => string, descriptor: DetailDescriptor): string {
-  const v = descriptor.values ?? {}
-  const resolved: Record<string, unknown> = { ...v }
-  if (typeof v.metricKey === 'string') resolved.metric = t(v.metricKey)
-  if (typeof v.clinicalKey === 'string') {
-    const clinicalDescriptor = { key: v.clinicalKey as string, values: v } as DetailDescriptor
-    resolved.clinical = resolveDetail(t, clinicalDescriptor)
-  }
-  if (typeof v.personalKey === 'string') {
-    resolved.personal = t(v.personalKey as string).toLowerCase()
-  }
-  return t(descriptor.key, resolved)
 }
 
 function ReasonBanner({
