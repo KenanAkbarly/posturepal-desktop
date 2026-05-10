@@ -7,6 +7,25 @@
     "loading": "Yüklənir…",
     "appName": "PosturePal"
   },
+  "notifications": {
+    "warning": {
+      "title": "Duruşunuzu düzəldin",
+      "subtitle": "Baseline-dan uzaqlaşırsınız"
+    },
+    "poor": {
+      "title": "Pis duruş aşkarlandı",
+      "subtitle": "Belinizi düzəldin"
+    },
+    "metric": {
+      "cva": "CVA",
+      "asymmetry": "Çiyin asimetriyası",
+      "alignment": "Düzlənmə"
+    },
+    "body": {
+      "clinical": "{{metric}} dəyəri {{value}} ({{op}} klinik təhlükəsiz aralıq {{cutoff}}). Başınızı qaldırıb çiyinlərinizin üstünə düzləndirin.",
+      "generic": "Duruşunuz təhlükəsiz aralıqdan kənardır. Belinizi düzəldin."
+    }
+  },
   "nav": {
     "monitor": "İzləyici",
     "dashboard": "Hesabat",

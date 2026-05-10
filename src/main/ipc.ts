@@ -1,6 +1,11 @@
 import { BrowserWindow, ipcMain, shell, systemPreferences } from 'electron'
 import { IPC } from '../preload/channels'
-import { playAlertSound, showPostureNotification, showTestNotification } from './notifications'
+import {
+  playAlertSound,
+  showPostureNotification,
+  showTestNotification,
+  type PostureNotificationPayload
+} from './notifications'
 import { setTrayStatus, type TrayStatus } from './tray'
 import type {
   BaselineRecord,
@@ -35,9 +40,9 @@ export function registerIpcHandlers(
     return granted
   })
 
-  ipcMain.handle(IPC.NOTIFY_POSTURE, (_event, level: 'warning' | 'poor') => {
-    console.log(`[ipc] NOTIFY_POSTURE received: ${level}`)
-    showPostureNotification(level)
+  ipcMain.handle(IPC.NOTIFY_POSTURE, (_event, payload: PostureNotificationPayload) => {
+    console.log(`[ipc] NOTIFY_POSTURE received: ${payload.title} — ${payload.body}`)
+    showPostureNotification(payload)
   })
 
   ipcMain.handle(IPC.NOTIFY_TEST, () => {

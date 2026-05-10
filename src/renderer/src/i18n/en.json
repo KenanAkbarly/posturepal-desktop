@@ -7,6 +7,25 @@
     "loading": "Loading…",
     "appName": "PosturePal"
   },
+  "notifications": {
+    "warning": {
+      "title": "Adjust your posture",
+      "subtitle": "Drifting from your baseline"
+    },
+    "poor": {
+      "title": "Poor posture detected",
+      "subtitle": "Sit up straight"
+    },
+    "metric": {
+      "cva": "CVA",
+      "asymmetry": "Shoulder asymmetry",
+      "alignment": "Alignment"
+    },
+    "body": {
+      "clinical": "{{metric}} at {{value}} ({{op}} clinical safe range {{cutoff}}). Lift your head and align it over your shoulders.",
+      "generic": "Your posture has slipped beyond the safe range. Sit up straight."
+    }
+  },
   "nav": {
     "monitor": "Monitor",
     "dashboard": "Dashboard",

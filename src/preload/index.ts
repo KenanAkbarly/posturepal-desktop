@@ -78,8 +78,11 @@ const api = {
     ipcRenderer.invoke(IPC.SYSTEM_GET_CAMERA_STATUS),
   requestCameraAccess: (): Promise<boolean> =>
     ipcRenderer.invoke(IPC.SYSTEM_REQUEST_CAMERA_ACCESS),
-  notifyPosture: (level: 'warning' | 'poor'): Promise<void> =>
-    ipcRenderer.invoke(IPC.NOTIFY_POSTURE, level),
+  notifyPosture: (payload: {
+    title: string
+    subtitle?: string
+    body: string
+  }): Promise<void> => ipcRenderer.invoke(IPC.NOTIFY_POSTURE, payload),
   testNotification: (): Promise<void> => ipcRenderer.invoke(IPC.NOTIFY_TEST),
   playAlertSound: (): Promise<void> => ipcRenderer.invoke(IPC.SOUND_PLAY_ALERT),
   setTrayStatus: (status: 'good' | 'warning' | 'poor' | 'idle'): Promise<void> =>
