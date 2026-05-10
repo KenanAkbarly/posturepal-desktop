@@ -30,7 +30,11 @@ export default function Home(): React.JSX.Element {
     sensitivity: settings.sensitivity,
     useClinicalLayer: settings.useClinicalLayer
   })
-  useStatusAlerts(status, { notifications: settings.notifications, sound: settings.sound })
+  useStatusAlerts(
+    status,
+    { metrics: smoothed ?? metrics, classification },
+    { notifications: settings.notifications, sound: settings.sound }
+  )
   useSnapshotPersistence({ enabled: !!baseline, smoothed, status })
 
   useEffect(() => {

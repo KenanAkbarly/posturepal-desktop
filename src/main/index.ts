@@ -23,7 +23,12 @@ function createWindow(): void {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      // Keep pose detection running even when the window is hidden
+      // to the tray. Without this, Chromium throttles requestAnimationFrame
+      // to ~1 fps in background, so MediaPipe stops detecting and
+      // posture-break notifications never fire.
+      backgroundThrottling: false
     }
   })
 

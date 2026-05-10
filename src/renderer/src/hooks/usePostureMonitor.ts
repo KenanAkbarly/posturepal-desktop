@@ -6,8 +6,8 @@ import type { BaselineProfile, SensitivityLevel } from '@/posture/calibration'
 import { classifyHybrid, type HybridClassification } from '@/posture/hybrid-classifier'
 import { usePoseDetection, type PoseDetectionState } from './usePoseDetection'
 
-const SMOOTHING_WINDOW_FRAMES = 90
-const HYSTERESIS_CONFIRM_MS = 5000
+const SMOOTHING_WINDOW_FRAMES = 30
+const HYSTERESIS_CONFIRM_MS = 1500
 
 export interface PostureMonitorState {
   pose: PoseDetectionState
