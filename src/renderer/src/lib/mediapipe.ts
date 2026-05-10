@@ -1,7 +1,10 @@
 import { FilesetResolver, PoseLandmarker } from '@mediapipe/tasks-vision'
 
-const WASM_BASE_PATH = '/mediapipe-wasm'
-const MODEL_PATH = '/models/pose_landmarker_full.task'
+// Relative paths resolve against the current document URL — works in
+// both dev (http://localhost:5173/) and prod (file:///.../out/renderer/index.html).
+// Absolute "/..." paths point at the filesystem root in prod, breaking the load.
+const WASM_BASE_PATH = './mediapipe-wasm'
+const MODEL_PATH = './models/pose_landmarker_full.task'
 
 export async function createPoseLandmarker(
   preferGpu = true

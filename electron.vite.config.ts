@@ -6,6 +6,9 @@ export default defineConfig({
   main: {},
   preload: {},
   renderer: {
+    // Relative base so file:// loads in production resolve assets next
+    // to index.html instead of at the filesystem root.
+    base: './',
     publicDir: resolve(__dirname, 'resources'),
     resolve: {
       alias: {
