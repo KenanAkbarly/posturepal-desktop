@@ -1,6 +1,6 @@
 {
   "name": "posturepal-desktop",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "PosturePal — privacy-first real-time posture monitoring desktop app",
   "main": "./out/main/index.js",
   "author": "Kanan Akbarli",
