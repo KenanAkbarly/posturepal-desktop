@@ -124,9 +124,10 @@
 ### Midday: Academic Materials
 - 🔴 Record 1-2 minute demo video (screen recording)
 - 🔴 Take 6-8 screenshots for documentation
-- 🔴 Write README.md for both repos
-- 🔴 Add "Academic Use Notice" to README
-- 🔴 Update technical spec if anything diverged
+- 🟢 Write README.md for both repos — 2026-05-10 (desktop + web README-lər canlı)
+- 🟢 Add "Academic Use Notice" to README — 2026-05-10 (Gatekeeper bypass, unsigned disclaimer)
+- 🟢 Update technical spec — 2026-05-08 (TECHNICAL_SPEC.md §3.3-§3.7 hybrid classification ilə)
+- 🟢 Presentation guide created — 2026-05-11 (`docs/PRESENTATION_GUIDE.md` 10-bölmə müəllim Q&A; `docs/QUICK_REFERENCE.md` 2-səhifəlik printable)
 
 ### Evening: Final Polish
 - 🔴 Run through manual test checklist (see TECHNICAL_SPEC.md §9)
